@@ -735,13 +735,141 @@ svg.append("g")
 
 Still want to learn D3? :)
 
-## Modularize `plot_main.js`
+## Begin to Modularize
 
 Our script is getting longer. It's getting more confusing. Thankfully, we can start to modularize it. No, we're not gonna have to learn namespacing like we do in R Shiny, but we are gonna use a similar concept and make everythign smaller.
 
 We're gonna move our x- and y-axis scripts into indiviual functions out of `plot_main.js`. We're gonna call them:
 
-1.  `x_axis.js`
-2.  `y_axis.js`
+1.  `plot_axis_x.js`
+2.  `plot_axis_y.js`
 
 We're also gonna modify our `r2d3` script to use those new files and create a callable function to make it easier to render.
+
+### Create `plot_axis_x.js`
+
+agak;g
+
+```{js, eval = FALSE}
+function plot_axis_x(svg, margin) {
+  // Stage One: Define min and max values of interest  
+  const x_min = new Date("1892-11-01");
+  const x_max = new Date("1893-12-31");  
+  
+  // Stage Two: Define dimensions
+  const x_dimension = d3.scaleLinear()
+    .domain([x_min, x_max])
+    .range([margin.left, width - margin.right]);
+    
+  // Stage Three: Define aesthetics
+  const x_aesthetic = d3.axisBottom(x_dimension)
+    
+  // Stage Four: Append to SVG
+  svg.append("g")
+    .attr("transform", `translate(0, ${height - margin.bottom})`)
+    .call(x_aesthetic);
+}
+```
+
+### Create `plot_axis_y.js`
+
+agak;g
+
+```{js, eval = FALSE}
+function plot_axis_y(svg, margin) {
+  
+  // Stage One: Define min and max values of interest
+  const y_min = 0;
+  const y_max = 37500000;
+  
+  // Stage Two: Define dimensions
+  const y_dimension = d3.scaleLinear()
+    .domain([y_min, y_max])
+    .range([height - margin.bottom, margin.top]);
+   
+  // Stage Three: Define aesthetics
+  const y_aesthetic = d3.axisLeft(y_dimension);
+  
+  // Stage Four: Append to SVG
+  svg.append("g")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .call(y_aesthetic);
+}
+```
+
+### Modify `plot_main.js`
+
+And here is updated `plot_main.js`:
+
+```{js, eval = FALSE}
+const margin = {top: 100, bottom: 100, right: 100, left: 100};
+
+// Create x- and y-axis
+plot_axis_y(svg, margin);
+plot_axis_x(svg, margin);
+```
+
+We'll have to update our `r2d3` script to use these additional files:
+
+```{r, eval = FALSE}
+r2d3::r2d3(
+  data = jGold,
+  script = c("D3/plot_main.js", "D3/plot_axis_x.js", "D3/plot_axis_y.js")
+)
+```
+
+::: callout-note
+## You don't have to define svg and margin
+
+Unlike R, you don't actually need to define svg and margin as parameters. JavaScript will treat them universally. However, I believe it's best to be explicit in what you're doing, mostly for readability sake.
+:::
+
+### Create `plot_gold_viz`
+
+It is getting tedious to re-run `r2d3` over and over again. And it'll get to be even more tedious as we add more `.js` files.
+
+We can made a single R function that both searches for all .js files and produces the data viz. I'm not going to define this too much since we're primarily focused on learning D3.
+
+Save the following in R/`plot_gold_viz.R`
+
+```{r, eval = FALSE}
+
+plot_gold_viz <- function(jGold, directory_path = "Cloud/project/D3") {
+  file_list <- list.files(
+    path = directory_path, 
+    full.names = TRUE)
+  
+  js_scripts <- file_list[grepl(".js",file_list)]
+
+  r2d3::r2d3(
+    data = jGold,
+    script = c("D3/plot_main.js", "D3/plot_axis_x.js", "D3/plot_axis_y.js")
+  )
+  
+}
+```
+
+Now update your `scrap.R` file:
+
+```{r, eval = FALSE}
+library(devtools)
+library(tidyverse)
+library(jsonlite)
+library(freeStateData)
+data("us_treasury_data_1890s")
+
+dGold <- us_treasury_data_1890s %>%
+  select("year_month",
+         "gold_certificates_in_treasury_cash") %>%
+  rename(
+    date = year_month,
+    gold_in_cash = gold_certificates_in_treasury_cash)
+
+jGold <- jsonlite::toJSON(dGold)
+
+source("R/plot_gold_viz.R")
+
+plot_gold_viz()
+```
+
+Now all you have to do is run `plot_gold_viz()` and your D3 viz will take any additional `.js` files required.

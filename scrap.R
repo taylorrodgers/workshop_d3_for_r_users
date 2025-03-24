@@ -12,9 +12,7 @@ dGold <- us_treasury_data_1890s %>%
     gold_in_cash = gold_certificates_in_treasury_cash)
 
 jGold <- jsonlite::toJSON(dGold)
-jGold
 
-r2d3::r2d3(
-  data = jGold,
-  script = "D3/plot_main.js"
-)
+source("R/plot_gold_viz.R")
+
+plot_gold_viz()
