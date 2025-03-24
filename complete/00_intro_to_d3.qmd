@@ -1,0 +1,747 @@
+---
+title: "Intro to D3 Workshop"
+subtitle: "For R Users"
+author: "Taylor Rodgers"
+format: html
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)
+load(paste0(getwd(),"/data/lScripts.rda"))
+load(paste0(getwd(),"/data/lGold.rda"))
+
+lScripts$scripts <- str_remove(lScripts$scripts , "complete/")
+lScripts$custom_css <- str_remove(lScripts$custom_css , "complete/")
+```
+
+## Introduction
+
+D3.js is the hardest data viz framework you'll ever learn. It requires knowledge of JavaScript, HTML, and CSS — on top of any other platform that you intend to integrate it with.
+
+But what it lacks in ease-of-use, it more than makes up for in precision.
+
+Some of the most advanced interactive data visualizations in the world use D3.js. It's also used to make more simpler data visualizations that need to be client-side rendered and adaptable to different screen sizes.
+
+For that reason, the best users of D3.js are often news organizations.
+
+## Pre-Requisites
+
+Before proceeding, you should be reliable comfortable with the following:
+
+-   You should be good at R concepts, such a basic `tidyverse` functions
+
+-   Reading a JSON file
+
+-   Moderate understanding of HTML and CSS (you should know what a class, style are)
+
+JavaScript is helpful to know, but D3.js actually serves as a good brdige to broader JavaScript concepts for people familiar with tidyverse syntax.
+
+You'll also need to install the following packages before proceeding:
+
+```{r, eval = FALSE}
+
+```
+
+::: callout-tip
+## Book Recommendation
+
+I strongly suggest *Eloquent JavaScript* to learn JavaScript in general. As an R user, you'll find JavaScript to be surprisingly similar, particularly when it comes to writing functions.
+:::
+
+## What This Tutorial Teaches?
+
+This tutorial is for R-users who want to learn D3.js. D3.js works well in both Quarto and Shiny. The skills you learned in those tools serve as a useful on-ramp to D3.js
+
+This tutorial will focus exclusively on building the data visualization you see below, which is a good introduction to key concepts in D3, as well as understanding how to properly structure your R and D3.js scripts.
+
+```{r, echo = FALSE}
+r2d3::r2d3(
+  script = lScripts$scripts,
+  css = lScripts$custom_css,
+  data = jsonlite::toJSON(lGold))
+```
+
+::: callout-note
+## D3 is frickin' cool!
+
+D3 provides more opportunities to build smoething cool than any other data viz framework I know of.
+
+It is largely teh domain of hobbyists, but those who really value creative fulfillment, it's a great skill to invest in. The biggest publications (WSJ, New York Times, etc.) heavily rely on D3 to present information in a novel and interactive way.
+
+(show gif)
+:::
+
+## Teaching a Foundation
+
+Don't think though that this doesn't build towards your larger goal of building more complex data visualizations, or exploring other data viz types. This tutorial teaches the key foundational concepts.
+
+The primary ones relate to:
+
+-   Margins
+
+-   Range
+
+-   Domain
+
+-   Width
+
+The secondary concept to learn is to write smaller functions to tackle each individual part of the data visualization. The one we're working on has X number. Nearly every single one relies on the margin, range, and domain to some degree. Most wouldn't work without them.
+
+You can see how changing margin, range, and domain operates with this Shiny App.
+
+This tutorial takes you through annotations, headers, and other aesthetic choices that often make D3 look more professional. Learning these little quarks will give you more options in making more advanced visuals.
+
+::: callout-warning
+## D3 is frickin' hard!
+
+D3 is without a doubt the hardest programming framework I have ever learned.
+
+It's also quite touchy. It doesn't do anything you didn't ask it to do, and that also means a lack of robust error messages.
+
+Directory names, function names, parameters, etc. are all things that will cause your script to not render.
+
+So be patient with yourself. I have sometimes spent hours searching for an issue to only find out it was a simple parameter name.
+
+You may go through this tutorial completely confused. I provide checkpoints along the way so that you can copy and paste scripts in their entirety to better understand where you miss something.
+
+Concepts may not solidify either the first time around. I try my best to reduce that burden.
+:::
+
+## What This Tutorial Skips
+
+One area of D3 relates to its data transformation functions, which are impressive and robust. I won't have time to cover this in this tutorial and I personally stick to good ol' `tidyverse` in R for most data prep.
+
+The one thing you should do though is rely on `list` to organize your data. Note though that this data is not limited to the data being presented, but other data points, such as annotations.
+
+::: callout-tip
+## ChatGPT is quite good!
+
+I actually have better luck asking ChatGPT questions than I do consulting with D3 documentation. I believe the reason is ChatGPT has to know how to crawl the internet, so HTML, CSS, and JavaScript are skills it learned quite well.
+
+I also find that ChatGPT is better at D3 than R and R Shiny.
+
+That said, it is still better when asking narrow questions.
+:::
+
+## Create R Script
+
+Create an R script called `scrap.R`. This is where we'll run evolving R code as we proceed through the tutorial.
+
+Place the following at the top:
+
+```{r, eval = FALSE}
+library(devtools)
+library(tidyverse)
+library(jsonlite)
+
+```
+
+## Our Data Set
+
+We'll be using the `freeStateData` package's `us_treasury_data_1890s` data set for this visualization. This package (built by yours truly) contains economic history data (for now). I periodically update it with data I find interesting. (Feel free to use it for other projects too).
+
+```{r, eval = FALSE}
+devtools::install_github("https://github.com/Free-State-Analytics/freeStateData")
+```
+
+Place and run the following in your `scrap.R` file.
+
+```{r}
+library(freeStateData)
+data("us_treasury_data_1890s")
+```
+
+You can run `?us_treasury_data_1890s` to see more information on this data set.
+
+We're gonna rename this to `dGold` for now and reduce the data to something simpler.
+
+```{r}
+dGold <- us_treasury_data_1890s %>%
+  select("year_month",
+         "gold_certificates_in_treasury_cash") %>%
+  rename(
+    date = year_month,
+    gold_in_cash = gold_certificates_in_treasury_cash)
+
+head(dGold)
+```
+
+## Transforming to JSON
+
+R data.frame is not what we need for D3. D3 relies on JSON structures.
+
+Use `jsonlite::toJSON` to transform `dGold`. Assign the JSON file the name `jGold`.
+
+```{r}
+jGold <- jsonlite::toJSON(dGold)
+jGold
+```
+
+## Create Primary Plot JavaScript Function
+
+In your directory...
+
+1.  Create a folder called `D3`
+2.  Using Posit Cloud's "D3 Script" example, save a script called `plot_main.js` within the `D3/` directory
+
+You should see it render in your Viewer immediately.
+
+::: callout-important
+## Why \`plot_main.js\`?
+
+The length of code in a single D3 data visualization will get overwhelming fast. This makes it much more difficult to trouble shoot.
+
+For that reason, we have a single script that will contain more specialized scripts in the future.
+:::
+
+## Create Render Plot R Function
+
+In `scrap.R`, add the following:
+
+```{r, eval = FALSE}
+r2d3::r2d3(
+  data = c(0.3, 0.6, 0.8, 0.95, 0.40, 0.20),
+  script = "D3/plot_main.js"
+)
+
+```
+
+```{r, echo = FALSE}
+r2d3::r2d3(
+  data = c(0.3, 0.6, 0.8, 0.95, 0.40, 0.20),
+  script = "/cloud/project/D3/plot_main.js"
+)
+```
+
+::: callout-important
+## What is svg?
+
+If you notice, our `plot_main.js` currently references an object called `svg`.
+
+`r2d3` generates an svg div in HTML by default. Any further code we write appends to this div or modifies it.
+
+The wiki definition for svg is: Scalable Vector Graphics is an XML-based vector image format for defining two-dimensional graphics, having support for interactivity and animation.
+:::
+
+## Checkpoint!
+
+We're going to provide check points frequently now. Things are about to get super hard! Check to make sure your `scrap.R` file matches below and that the D3 visualizatoin renders to your Viewer.
+
+```{r, eval = FALSE}
+library(devtools)
+library(tidyverse)
+library(jsonlite)
+library(freeStateData)
+data("us_treasury_data_1890s")
+
+dGold <- us_treasury_data_1890s %>%
+  select("year_month",
+         "gold_certificates_in_treasury_cash") %>%
+  rename(
+    date = year_month,
+    gold_in_cash = gold_certificates_in_treasury_cash)
+
+jGold <- jsonlite::toJSON(dGold)
+jGold
+
+r2d3(
+  data = c(0.3, 0.6, 0.8, 0.95, 0.40, 0.20),
+  script = "D3/plot_main.js"
+)
+```
+
+## Swap Out Data
+
+Building a D3 visualizations means building pieces that won't necessarily appear yet. Have faith in the process, but also follow instructions closely. If it helps, copy and paste the code you see directly from this tutorial.
+
+First, let's replace our `data` parameter in `r2d3` with `jGold` in our `scrap.R` file:
+
+```{r, eval = FALSE}
+r2d3(
+  data = jGold,
+  script = "D3/plot_main.js"
+)
+```
+
+This will make the rendering unavailable for the time being.
+
+## Creating Y-Axis
+
+Now that we're feeding proper data to our D3 plot, let's add the axises. We're going to start with the y-axis, because the formatting is easier to understand and it'll help ease us into the key concepts.
+
+There are actually four stages to producing an axis:
+
+1.  Define the min and max value for your axis
+2.  Define the dimensions of the axis
+3.  Define aesthetics of the axis
+4.  Append axis to your svg
+
+The variables or "bindings" in one stage are referenced in the next.
+
+That's a lot of work for just one axis, right?
+
+And each steps has lots of fine little nuances that if you do wrong, nothing works!
+
+### Define Min and Max Value for Axis
+
+We're going to hard code the min and max vlaue for our axis in this tutorial. Looking at `max(dGold$gold_in_cash)`, we see that the max value is `37721280`. We're going to round up to `37500000` for this tutorial, but you can use D3's robust data prep functions to dynamically select the max value.
+
+Within `plot_main.js`, we're going to delete everything and add the following:
+
+```{js, eval = FALSE}
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+```
+
+`const` is a "binding" in JavaScript that makes it easier to pass around values, much in the same way an object name does in R.
+
+### Define Dimensions of the Axis
+
+We're going to create another binding which defines the dimensions the axis should follow. We'll call it `y_dimension`.
+
+We'll have to define the type of axis we're defining. In this example, we are looking at numeric data with a linear scale. So we'll use `d3.scaleLinear`.
+
+You can see all the options for D3's scales here **provide link**
+
+In `plot_main.js`, add the following:
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear();
+```
+
+That doesn't do anything though. We have to define the dimensions, which rely crucially on two key concepts mentioned at the start of the tutorial: domain and range.
+
+**Domain** is the dimension in relation to the actual data (i.e., the min value and the max value of interest). We pass a JavaScript array to the `.domain()` function.
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+```
+
+As you can tell, an [array in JavaScript](https://eloquentjavascript.net/04_data.html#h-k6fyJHbpdU) is not like an array in R.
+
+**Range** is the dimension in relation to the SVG (i.e., how far does the axis traverse across the overall image).
+
+We will pass an array `[0, height]` through `.range()`:
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([0, height]);
+```
+
+`height` is a default variable added to your D3 script via `r2d3`. It basically encompasses the entire view port available.
+
+Your complete `plot_main.js` up to this point should look like the following:
+
+```{js, eval = FALSE}
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([0, height]);
+```
+
+Keep in mind, you won't see anything yet in your Viewer window.
+
+### Define Aesthetics
+
+`y_dimension` defines how the data will place itself in relation to the SVG. It does not really define how axis itself will appear. That is what our next binding `y_aesthetics` will do.
+
+We'll pass `y_dimension` as a param to D3's `axisLeft()`. This first defines that we want the axis to be treated as left axis, which passes defaults to the labels of interest.
+
+You can read more about axises here: **provide link**
+
+In `plot_main.js`, add the following at the bottom:
+
+```{js, eval = FALSE}
+// Stage Three: Define aesthetics
+const y_aesthetic = d3.axisLeft(y_dimension);
+```
+
+We will be sprucing `y_aesthetic` up further later, but for now, we're going to rely on defaults.
+
+### Append Axis to SVG
+
+We built bindings that will inform D3 what we want to see in our axis. However, we haven't updated our SVG yet to use this information.
+
+In `plot_main.js`, add the following to the bottom:
+
+```{js, eval = FALSE}
+// Stage Four: Append to SVG
+svg.append("g")
+  .call(y_aesthetic);
+```
+
+This appends a `g` div to your `svg`. You then call your `y_aesthetic` binding, which references your `y_dimension` binding, which references your `y_min` and `y_max` binding, to inform the new `g` what it should look like.
+
+Your complete `plot_main.js` script should look like:
+
+```{js, eval = FALSE}
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([0, height]);
+ 
+// Stage Three: Define aesthetics
+const y_aesthetic = d3.axisLeft(y_dimension);
+
+// Stage Four: Append to SVG
+svg.append("g")
+  .call(y_aesthetic);
+```
+
+Now run the following:
+
+```{r, eval = FALSE}
+r2d3::r2d3(
+  data = jGold,
+  script = "D3/plot_main.js"
+)
+```
+
+### Adding Margin
+
+If you notice, our line is at the far edge. There are actual labels on our axis, but we can't see them.
+
+Let's move our axis to the right by adding some margin space. We can do this by modify Stage Four's `svg.append()` function and adding a CSS attribute that says "transform" by nudging ***100 pixels to the right***.ISthisright?
+
+```{js, eval = FALSE}
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(100, 0)`)
+  .call(y_aesthetic);
+```
+
+### Flipping Our Axis
+
+Now re-run your `r2d3` script in `scrap.R`. Notice anything funny?
+
+```{r, eval = FALSE}
+r2d3::r2d3(
+  data = jGold,
+  script = "D3/plot_main.js"
+)
+```
+
+```{r, echo = FALSE}
+r2d3::r2d3(
+  data = jGold,
+  script = "/cloud/project/D3/plot_main.js"
+)
+```
+
+This is how touchy little arguments are with regards to D3. What happened is that we mapped our range `[0, height]` to our domain `[y_min, y_max]` by saying that `0` corresponds to `y_min`. Really, we want `0` to correspond to `y_max`.
+
+We can modify `y_dimension` to account for this:
+
+```{js, echo = FALSE}
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height, 0]);
+```
+
+And our complete `plot_main.js` script is like so:
+
+```{js, echo = FALSE}
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height, 0]);
+ 
+// Stage Three: Define aesthetics
+const y_aesthetic = d3.axisLeft(y_dimension);
+
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(100, 0)`)
+  .call(y_aesthetic);
+```
+
+## Creating X-Axis
+
+We have one axis done! Quite a bit of work, right? Now we'll have to add the x-axis.
+
+Once again, we'll have four stages:
+
+1.  Define the min and max value for your axis
+2.  Define the dimensions of the axis
+3.  Define aesthetics of the axis
+4.  Append axis to your svg
+
+### Define Min and Max Value for Axis
+
+Much like the y-axis, we want to hardcode our values for now. Unlike the y-axis, we'll pick specific values rather than select the values found in the data set.
+
+We want our min date to be `1892-11-01` and max date to be `1893-12-31`.
+
+However, we'll have to translate those values to be something JavaScript can understand. (This is a good example of ChatGPT being helpful.)
+
+Within `plot_main.js`, place the following near the bottom of the script:
+
+```{js, eval = FALSE}
+// Stage One: Define min and max values of interest  
+const x_min = new Date("1892-11-01");
+const x_max = new Date("1893-12-31");  
+```
+
+### Define Dimensions of the Axis
+
+Much like before, we're gonna create a binding called `x_dimension` to define the dimensiosn of our x-axis. Unlike before, we have to use a different scale. Since this relates to datetimes, we'll use `d3.scaleTime`. You can see all the options for D3's scales here **provide link**
+
+In `plot_main.js`, add the following:
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleTime();
+```
+
+We'll define our `.domain` in a similar way as before:
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleLinear()
+  .domain([x_min, x_max])
+```
+
+And our range using `width` instead. (Notice that `width` needs to correspond to `x_max`.
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleLinear()
+  .domain([x_min, x_max])
+  .range([0, width]);
+```
+
+`width` is a default variable added to your D3 script via `r2d3`, much like `height`. It covers the width of the viewport and makes D3 data visualizations dynamic when they resize.
+
+### Define Aesthetics
+
+Our next binding `x_aesthetic` will be similar to before, only we will use `axisBottom`.
+
+You can read more about axises here: **provide link**
+
+In `plot_main.js`, add the following at the bottom:
+
+```{js, eval = FALSE}
+// Stage Three: Define aesthetics
+const x_aesthetic = d3.axisBottom(x)
+```
+
+We will be sprucing `y_aesthetic` up further later, but for now, we're going to rely on defaults.
+
+### Append Axis to SVG
+
+Finally, we need to append our SVG.
+
+```{js, eval = FALSE}
+// Stage Four: Append to SVG
+svg.append("g")
+  .call(x_aesthetic);
+```
+
+Our complete `plot_main.js` script should look like this:
+
+```{js, eval = FALSE}
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height, 0]);
+ 
+// Stage Three: Define aesthetics
+const y_aesthetic = d3.axisLeft(y_dimension);
+
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(100, 0)`)
+  .call(y_aesthetic);
+  
+// Stage One: Define min and max values of interest  
+const x_min = new Date("1892-11-01");
+const x_max = new Date("1893-12-31");  
+
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleLinear()
+  .domain([x_min, x_max])
+  .range([0, width]);
+  
+// Stage Three: Define aesthetics
+const x_aesthetic = d3.axisBottom(x_dimension)
+  
+// Stage Four: Append to SVG
+svg.append("g")
+  .call(x_aesthetic);
+```
+
+### There Is a Lot Wrong Here
+
+When you re-run your `scrap.R` file, we find a lot wrong with the rendering.
+
+Much of this has to do with margins. Some of it has to do with the values used in `x_aesthetic` and `y_aesthetic`.
+
+Also, our script is getting long. We'll need to slim that down.
+
+We're gonna tackle the margins for now.
+
+## Define and Pass Margins
+
+**Margins** are a key concept in D3 that will show up a lot. Most tutorials you'll find have margins as a default value. And it's important to define them in once place because you use them everywhere!
+
+For that reason, it's best to define them in one place.
+
+At the top of `plot_main.js`, add the following:
+
+```{js, eval = FALSE}
+const margin = {top: 100, bottom: 100, right: 100, left: 100}
+```
+
+Now, we need to adjust the x- and y-axis to use these margins.
+
+Let's line up the left margin first.
+
+### Modify X- and Y-Axis to Use `margin.left`
+
+Modify the "transform" attribute for our `g` div for the y-axis like so:
+
+```{js, eval = FALSE}
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .call(y_aesthetic);
+```
+
+And now modify `x_dimension` to do the same:
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleLinear()
+  .domain([x_min, x_max])
+  .range([margin.left, width]);
+```
+
+::: callout-important
+## Why did we add \`margin.left\` in differnet places for x- and y-axis?
+
+You may have noticed that we updated the `range()` for the x-axis to use `margin.left`, but updated the attribute of `g` div for our y-axis. Why?
+
+Well, it has to do with what these are working on. `y_dimension` focused on defining how our future bar graph will expand and contract vertically. That means it doesn't need to think about where it goes on the x-axis. However, we want to change its x-axis position. We do that by changing where `g` is placed.
+
+Oppositely, `x_dimension` is concerned with how our future bar graph will interpret data on a horizontal scale. `margin.left` is crucial for determining that placement. So we have to use that information in the `range`.
+:::
+
+### Aside: Modify X-Axis to Be on Bottom
+
+This isn't quite rleated to the margins, but now that we better understand how attribute rela
+
+```{js, eval = FALSE}
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height})`)
+  .call(x_aesthetic);
+```
+
+When you run this though, our x-axis disappears entirely! We have to add our other margins.
+
+### Modify X- and Y-Axis to Use Other Margins
+
+asdga
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height - margin.bottom, margin.top]);
+```
+
+asdgasdg
+
+```{js, eval = FALSE}
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .call(x_aesthetic);
+```
+
+asdgag
+
+```{js, eval = FALSE}
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleLinear()
+  .domain([x_min, x_max])
+  .range([margin.left, width - margin.right]);
+```
+
+Our complete \``` plot_main.js` `` script so far should look like:
+
+```{js, eval = FALSE}
+const margin = {top: 100, bottom: 100, right: 100, left: 100}
+
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height - margin.bottom, margin.top]);
+ 
+// Stage Three: Define aesthetics
+const y_aesthetic = d3.axisLeft(y_dimension);
+
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .call(y_aesthetic);
+  
+  
+// Stage One: Define min and max values of interest  
+const x_min = new Date("1892-11-01");
+const x_max = new Date("1893-12-31");  
+
+// Stage Two: Define dimensions
+const x_dimension = d3.scaleLinear()
+  .domain([x_min, x_max])
+  .range([margin.left, width - margin.right]);
+  
+// Stage Three: Define aesthetics
+const x_aesthetic = d3.axisBottom(x_dimension)
+  
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .call(x_aesthetic);
+```
+
+Still want to learn D3? :)
+
+## Modularize `plot_main.js`
+
+Our script is getting longer. It's getting more confusing. Thankfully, we can start to modularize it. No, we're not gonna have to learn namespacing like we do in R Shiny, but we are gonna use a similar concept and make everythign smaller.
+
+We're gonna move our x- and y-axis scripts into indiviual functions out of `plot_main.js`. We're gonna call them:
+
+1.  `x_axis.js`
+2.  `y_axis.js`
+
+We're also gonna modify our `r2d3` script to use those new files and create a callable function to make it easier to render.

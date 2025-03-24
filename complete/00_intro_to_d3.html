@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Taylor Rodgers">
+
+<title>Intro to D3 Workshop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="00_intro_to_d3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="00_intro_to_d3_files/libs/quarto-html/quarto.js"></script>
+<script src="00_intro_to_d3_files/libs/quarto-html/popper.min.js"></script>
+<script src="00_intro_to_d3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="00_intro_to_d3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="00_intro_to_d3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="00_intro_to_d3_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="00_intro_to_d3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="00_intro_to_d3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="00_intro_to_d3_files/libs/bootstrap/bootstrap-3dc9094430be18c8a5aac800159ef30a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="00_intro_to_d3_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="00_intro_to_d3_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="00_intro_to_d3_files/libs/r2d3-render-0.1.0/r2d3-render.js"></script>
+<script src="00_intro_to_d3_files/libs/webcomponents-2.0.0/webcomponents.js"></script>
+<script src="00_intro_to_d3_files/libs/r2d3-binding-0.2.6/r2d3.js"></script>
+<script src="00_intro_to_d3_files/libs/d3v6-6.2.0/d3.min.js"></script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Intro to D3 Workshop</h1>
+<p class="subtitle lead">For R Users</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Taylor Rodgers </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>D3.js is the hardest data viz framework you’ll ever learn. It requires knowledge of JavaScript, HTML, and CSS — on top of any other platform that you intend to integrate it with.</p>
+<p>But what it lacks in ease-of-use, it more than makes up for in precision.</p>
+<p>Some of the most advanced interactive data visualizations in the world use D3.js. It’s also used to make more simpler data visualizations that need to be client-side rendered and adaptable to different screen sizes.</p>
+<p>For that reason, the best users of D3.js are often news organizations.</p>
+</section>
+<section id="pre-requisites" class="level2">
+<h2 class="anchored" data-anchor-id="pre-requisites">Pre-Requisites</h2>
+<p>Before proceeding, you should be reliable comfortable with the following:</p>
+<ul>
+<li><p>You should be good at R concepts, such a basic <code>tidyverse</code> functions</p></li>
+<li><p>Reading a JSON file</p></li>
+<li><p>Moderate understanding of HTML and CSS (you should know what a class, style are)</p></li>
+</ul>
+<p>JavaScript is helpful to know, but D3.js actually serves as a good brdige to broader JavaScript concepts for people familiar with tidyverse syntax.</p>
+<p>You’ll also need to install the following packages before proceeding:</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Book Recommendation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I strongly suggest <em>Eloquent JavaScript</em> to learn JavaScript in general. As an R user, you’ll find JavaScript to be surprisingly similar, particularly when it comes to writing functions.</p>
+</div>
+</div>
+</section>
+<section id="what-this-tutorial-teaches" class="level2">
+<h2 class="anchored" data-anchor-id="what-this-tutorial-teaches">What This Tutorial Teaches?</h2>
+<p>This tutorial is for R-users who want to learn D3.js. D3.js works well in both Quarto and Shiny. The skills you learned in those tools serve as a useful on-ramp to D3.js</p>
+<p>This tutorial will focus exclusively on building the data visualization you see below, which is a good introduction to key concepts in D3, as well as understanding how to properly structure your R and D3.js scripts.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="r2d3 html-widget html-fill-item" id="htmlwidget-6435d79de8ac13f6fb8f" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-6435d79de8ac13f6fb8f">{"x":{"data":{"gold_circulation_filtered":[{"months":"1892-11-01","gold_certificates_in_treasury_cash":19632830},{"months":"1892-12-01","gold_certificates_in_treasury_cash":24254750},{"months":"1893-01-01","gold_certificates_in_treasury_cash":15729770},{"months":"1893-02-01","gold_certificates_in_treasury_cash":7782260},{"months":"1893-03-01","gold_certificates_in_treasury_cash":5135430},{"months":"1893-04-01","gold_certificates_in_treasury_cash":8888310},{"months":"1893-05-01","gold_certificates_in_treasury_cash":3324670},{"months":"1893-06-01","gold_certificates_in_treasury_cash":1071170},{"months":"1893-07-01","gold_certificates_in_treasury_cash":93710},{"months":"1893-08-01","gold_certificates_in_treasury_cash":565370},{"months":"1893-09-01","gold_certificates_in_treasury_cash":129220},{"months":"1893-10-01","gold_certificates_in_treasury_cash":115860},{"months":"1893-11-01","gold_certificates_in_treasury_cash":149090},{"months":"1893-12-01","gold_certificates_in_treasury_cash":75590}],"highlights":[{"months":"1892-12-01","gold_certificates_in_treasury_cash":24254750},{"months":"1893-12-01","gold_certificates_in_treasury_cash":75590}],"annotations":[{"months":"1892-12-01","gold_certificates_in_treasury_cash":25000000,"annotation":"$24.25 million"},{"months":"1893-03-01","gold_certificates_in_treasury_cash":17500000,"annotation":"President Cleveland begins second term"},{"months":"1893-12-01","gold_certificates_in_treasury_cash":22500000,"annotation":"$75.59 thousand"}]},"type":"json","container":"svg","options":null,"script":"var d3Script = function(d3, r2d3, data, svg, width, height, options, theme, console) {\nthis.d3 = d3;\n\nsvg = d3.select(svg.node());\n/* R2D3 Source File:  D3/00_primary.js */\n// Ensure the font is loaded by adding a <link> element to the document head\nconst link = document.createElement(\"link\");\nlink.href = \"https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200;300;400;500;600;700;900&display=swap\";\nlink.rel = \"stylesheet\";\ndocument.head.appendChild(link);\n\n///if (options.margins) {\n//  margin = { top: options.margins, right: options.margins, bottom: options.margins, left: options.margins };\n//} else {\n  margin = { top: 150, right: 100, bottom: 70, left: 100 };\n//}\n\n// Axis\nconst x_min = d3.timeDay.offset(d3.min(data.gold_circulation_filtered, d => new Date(d.months)), -20);\nconst x_max = d3.max(data.gold_circulation_filtered, d => new Date(d.months));\nconst x_tick_count = data.gold_circulation_filtered.filter(d => d.months).length;\nconst y_min = 0;\nconst y_max = d3.max(data.gold_circulation_filtered, d => d.gold_certificates_in_treasury_cash);\nconst y = plot_yaxis(svg, margin, y_min, y_max, width);\nconst x = plot_x_axis(svg, margin, x_min, x_max, x_tick_count);\n\n// Labels, texts, and annotations\nconst header_primary = plot_header_primary(svg, margin, data);\nconst header_secondary = plot_header_secondary(svg, margin, data);\n\nconst annotation_one = plot_annotations(\n  svg, \n  margin, \n  x_placement = new Date(data.annotations[0].months), \n  y_placement = data.annotations[0].gold_certificates_in_treasury_cash, \n  annotation_text = data.annotations[0].annotation, add_line = false);\n\nconst annotation_two = plot_annotations(\n  svg, \n  margin, \n  x_placement = new Date(data.annotations[1].months), \n  y_placement = data.annotations[1].gold_certificates_in_treasury_cash, \n  annotation_text = data.annotations[1].annotation, \n  add_line = true,\n  align = \"left\",\n  color = \"standard\");\n\nconst annotation_three = plot_annotations(\n  svg, \n  margin, \n  x_placement = new Date(data.annotations[2].months), \n  y_placement = data.annotations[2].gold_certificates_in_treasury_cash, \n  annotation_text = data.annotations[2].annotation, \n  add_line = true);\n\nconst y_label = plot_y_label(svg, margin);\nconst source_label = plot_source(svg, margin);\n\n\n// Bars\nconst bars = plot_bar(svg, margin, data);\nconst highlight = plot_highlight(svg, margin, data);\n\n/* R2D3 Source File:  D3/plot_annotations.js */\nfunction plot_annotations(\n  svg, \n  margin, \n  x_placement, \n  y_placement, \n  annotation_text, \n  add_line, \n  align = \"middle\",\n  color = \"highlight\") {\n  \n      svg.append(\"text\")\n        .attr(\"class\", \"text-annotation \" + color)\n        .attr(\"x\", x(x_placement))\n        .attr(\"y\", y(y_placement) - 10)\n        .text(annotation_text)\n        .attr(\"text-anchor\", align);\n    \n    if (add_line) {\n      \n      svg.append(\"line\")\n        .attr(\"class\", color + \" line\")\n        .attr(\"x1\", x(x_placement))\n        .attr(\"x2\", x(x_placement))\n        .attr(\"y1\", y(y_placement) - 5)\n        .attr(\"y2\", y(0) - 10);\n\n    }\n}\n\n/* R2D3 Source File:  D3/plot_bar.js */\nfunction plot_bar(svg, margin, data) {\n  \n  barWidth = (width - margin.left - margin.right) / 20;\n  \n  svg.selectAll(\"bar\")\n  .data(data.gold_circulation_filtered)\n  .enter()\n  .append(\"rect\")\n  .attr(\"class\", \"bar\")\n  .attr(\"fill\", \"#4A4A4A\")\n  .attr(\"x\", d => x(new Date(d.months)) - (barWidth / 2.25))\n  .attr(\"y\", d => y(d.gold_certificates_in_treasury_cash))\n  .attr(\"width\", barWidth)\n  .attr(\"height\", d => height - margin.bottom - y(d.gold_certificates_in_treasury_cash)); \n}\n\n/* R2D3 Source File:  D3/plot_header_primary.js */\nfunction  plot_header_primary(svg, margin, data) {\n  \n  const change = (((data.highlights[0].gold_certificates_in_treasury_cash - data.highlights[1].gold_certificates_in_treasury_cash) / data.highlights[0].gold_certificates_in_treasury_cash) * 100).toFixed(1) + \"%\"\n  \n  if (width < 741 & width > 400) {\n    svg.append(\"text\")\n    .attr(\"class\", \"header-primary-medium\")\n    .attr(\"x\", margin.left - 30)\n    .attr(\"y\", 50)\n    .text(\"Gold Certificates in U.S. Treasury \")\n    .append(\"tspan\")\n    .attr(\"class\", \"highlight\")\n    .text(\" Declined \" + change);\n  } else if (width < 400) {\n    svg.append(\"text\")\n    .attr(\"class\", \"header-primary-small\")\n    .attr(\"x\", margin.left - 30)\n    .attr(\"y\", 50)\n    .text(\"Gold Certificates in U.S. Treasury \")\n    .append(\"tspan\")\n    .attr(\"class\", \"highlight\")\n    .text(\" Declined \" + change); \n  } else {\n    svg.append(\"text\")\n    .attr(\"class\", \"header-primary\")\n    .attr(\"x\", margin.left - 30)\n    .attr(\"y\", 50)\n    .text(\"Gold Certificates in U.S. Treasury \")\n    .append(\"tspan\")\n    .attr(\"class\", \"highlight\")\n    .text(\" Declined \" + change);     \n  }\n  \n  \n}\n\n/* R2D3 Source File:  D3/plot_header_secondary.js */\nfunction plot_header_secondary(svg, margin, data) {\n  \n  if (width < 741 & width > 400) {\n    svg.append(\"text\")\n    .attr(\"class\", \"header-secondary-medium\")\n    .attr(\"x\", margin.left - 30)\n    .attr(\"y\", 80)\n    .text(\"From December 1892 until December 1893\");\n  } else if (width < 400) {\n    svg.append(\"text\")\n    .attr(\"class\", \"header-secondary-small\")\n    .attr(\"x\", margin.left - 30)\n    .attr(\"y\", 80)\n    .text(\"From December 1892 until December 1893\");\n  } else {\n    svg.append(\"text\")\n    .attr(\"class\", \"header-secondary\")\n    .attr(\"x\", margin.left - 30)\n    .attr(\"y\", 80)\n    .text(\"From December 1892 until December 1893\");  \n  }\n  \n  \n}\n\n/* R2D3 Source File:  D3/plot_highlight.js */\nfunction plot_highlight(svg, margin, data) {\n  \n  barWidth = (width - margin.left - margin.right) / 20;\n  svg.selectAll(\"bar\")\n  .data(data.highlights)\n  .enter()\n  .append(\"rect\")\n  .attr(\"class\", \"bar\")\n  .attr(\"fill\", \"#AC882A\")\n  .attr(\"x\", d => x(new Date(d.months)) - (barWidth / 2.25))\n  .attr(\"y\", d => y(d.gold_certificates_in_treasury_cash))\n  .attr(\"width\", barWidth)\n  .attr(\"height\", d => height - margin.bottom - y(d.gold_certificates_in_treasury_cash)); \n  \n}\n\n/* R2D3 Source File:  D3/plot_primary.js */\nfunction plot_primary(svg, margin) {\n  \n  // Axis\n  const xMin = d3.timeDay.offset(d3.min(data.gold_circulation_filtered, d => new Date(d.months)), -20);\n  const xMax = d3.max(data.gold_circulation_filtered, d => new Date(d.months));\n  const xTickCount = data.gold_circulation_filtered.filter(d => d.months).length;\n  const minY = 0;\n  const maxY = d3.max(data.gold_circulation_filtered, d => d.gold_certificates_in_treasury_cash);\n  const y = plot_yaxis(svg, margin, minY, maxY);\n  const x = plot_xaxis(svg, margin, xMin, xMax, xTickCount);\n  \n  // Labels, texts, and annotations\n  const header_primary = plot_header_primary(svg, margin, data);\n  const header_secondary = plot_header_secondary(svg, margin, data);\n  \n  const annotation_one = plot_annotations(\n    svg, \n    margin, \n    x_placement = new Date(data.annotations[0].months), \n    y_placement = data.annotations[0].gold_certificates_in_treasury_cash, \n    annotation_text = data.annotations[0].annotation, add_line = false);\n  \n  const annotation_two = plot_annotations(\n    svg, \n    margin, \n    x_placement = new Date(data.annotations[1].months), \n    y_placement = data.annotations[1].gold_certificates_in_treasury_cash, \n    annotation_text = data.annotations[1].annotation, \n    add_line = true,\n    align = \"left\",\n    color = \"standard\");\n  \n  const annotation_three = plot_annotations(\n    svg, \n    margin, \n    x_placement = new Date(data.annotations[2].months), \n    y_placement = data.annotations[2].gold_certificates_in_treasury_cash, \n    annotation_text = data.annotations[2].annotation, \n    add_line = true);\n  \n  const y_label = plot_y_label(svg, margin);\n  const source_label = plot_source(svg, margin);\n  \n  \n  // Bars\n  const bars = plot_bar(svg, margin, data);\n  const highlight = plot_highlight(svg, margin, data);\n  \n  return svg.node();\n}\n\n/* R2D3 Source File:  D3/plot_source.js */\nfunction plot_source(svg, margin) {\n  \n  svg.append(\"text\")\n  .attr(\"class\", \"text-source\")\n  .attr(\"x\", width - 10)\n  .attr(\"y\", height - 10)\n  .text(\"U.S. Treasury's Report of Financial Panic of 1893\");\n  \n}\n\n/* R2D3 Source File:  D3/plot_x_axis.js */\nfunction plot_x_axis(svg, margin, min_date, max_date, x_tick_count) {\n  \n  \n  const timeFormat = d3.utcFormat(\"%y %b\");\n  \n  const x = d3.scaleTime()\n  .domain([min_date, max_date])\n  .range([margin.left, width - margin.right]);\n  \n  const tickValues = x.ticks(x_tick_count); \n  \n  if (tickValues[tickValues.length - 1] < max_date) {\n    tickValues.push(max_date);\n  }\n  \n  const x_axis = d3.axisBottom(x)\n  .tickValues(tickValues)\n  .tickFormat(timeFormat);\n  \n  svg.append(\"g\")\n  .attr(\"class\", \"x-axis\")\n  .attr(\"transform\", `translate(0, ${height - margin.bottom})`)\n  .call(x_axis);\n  \n  return x;\n  \n}\n\n/* R2D3 Source File:  D3/plot_y_label.js */\nfunction plot_y_label(svg, margin) {\n  \n  svg.append(\"text\")\n  .attr(\"class\", \"axis-label\")\n  .attr(\"x\", -(height / 2))\n  .attr(\"y\", margin.left - 70)\n  .attr(\"transform\", \"rotate(-90)\")\n  .attr(\"text-anchor\", \"middle\")\n  .append(\"tspan\")\n  .text(\"Gold Certificates in U.S. Treasury\") \n  .append(\"tspan\")\n  .attr(\"x\", -(height / 2))\n  .attr(\"dy\", \"1.2em\") \n  .style(\"font-style\", \"italic\") \n  .text(\"(millions)\");\n  \n}\n\n/* R2D3 Source File:  D3/plot_yaxis.js */\nfunction plot_yaxis(svg, margin, minY, maxY, width) {\n  \n  const roundedMaxY =  Math.ceil(maxY / 1000000) * 1000000;\n  const tickMajorInterval = roundedMaxY / 5;\n  const tickMinorInterval = tickMajorInterval / 2;\n  const tickMajorValues = d3.range(0, roundedMaxY + tickMajorInterval, tickMajorInterval);\n  const tickMinorValues = d3.range(0, roundedMaxY + tickMinorInterval, tickMinorInterval);\n  \n  const y = d3.scaleLinear()\n  .domain([minY, roundedMaxY]) \n  .range([height - margin.bottom, margin.top]);\n  \n  const yAxis = d3.axisLeft(y)\n  .tickValues(tickMajorValues)\n  .tickFormat(d => `$${d / 1000000}`); ;\n  \n  const yGridLine = d3.axisLeft(y)\n  .tickValues(tickMajorValues)\n  .tickFormat(\"\")\n  .tickSize(-(width - margin.right - margin.left)); ;\n  \n  \n  svg.append(\"g\")\n  .attr(\"class\", \"y-axis\")\n  .attr(\"transform\", `translate(${margin.left}, 0)`)\n  .call(yAxis);\n  \n  svg.append(\"g\")\n  .attr(\"class\", \"y-axis\")\n  .attr(\"transform\", `translate(${margin.left}, 0)`)\n  .style(\"opacity\", .10)\n  .call(yGridLine);\n  \n  return y; \n  \n}\n};","style":"/* R2D3 Source File:  D3/custom.css */\nsvg {\n  font-family: \"Source Sans 3\";\n}\n\n.highlight {\n  fill: #AC882A;\n}\n\nline.highlight  {\n  stroke: #AC882A;\n  stroke-width: 1;\n}\n\n.standard {\n  fill: #373735;\n}\n\nline.standard {\n  stroke: #373735;\n}\n\n.y-axis, .x-axis {\n  font-family: \"Source Sans 3\";\n  font-weight: 300;\n  font-size: .8em;\n}\n\n.header-primary {\n  font-size: 2em;\n  font-weight: 400;\n  fill: #373735;\n}\n\n.header-primary-medium {\n  font-size: 1.5em;\n  font-weight: 400;\n  fill: #373735;\n}\n\n.header-primary-small {\n  font-size: 1em;\n  font-weight: 400;\n  fill: #373735;\n}\n\n.header-secondary {\n  font-size: 1.5em;\n  font-weight: 300;\n  fill: #373735;\n}\n\n.header-secondary-medium {\n  font-size: 1.25em;\n  font-weight: 300;\n  fill: #373735;\n}\n\n.header-secondary-small {\n  font-size: .75em;\n  font-weight: 300;\n  fill: #373735;\n}\n.axis-label {\n  font-weight: 300;\n  fill: #373735; \n}\n\n.text-annotation {\n  font-weight: 500;\n}\n\n.text-source {\n  font-weight: 300;\n  font-style: italic;\n  font-size: 1em;\n  text-anchor: end;\n}","version":6,"theme":{"default":{"background":"#FFFFFF","foreground":"#000000"},"runtime":null},"useShadow":true},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+D3 is frickin’ cool!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>D3 provides more opportunities to build smoething cool than any other data viz framework I know of.</p>
+<p>It is largely teh domain of hobbyists, but those who really value creative fulfillment, it’s a great skill to invest in. The biggest publications (WSJ, New York Times, etc.) heavily rely on D3 to present information in a novel and interactive way.</p>
+<p>(show gif)</p>
+</div>
+</div>
+</section>
+<section id="teaching-a-foundation" class="level2">
+<h2 class="anchored" data-anchor-id="teaching-a-foundation">Teaching a Foundation</h2>
+<p>Don’t think though that this doesn’t build towards your larger goal of building more complex data visualizations, or exploring other data viz types. This tutorial teaches the key foundational concepts.</p>
+<p>The primary ones relate to:</p>
+<ul>
+<li><p>Margins</p></li>
+<li><p>Range</p></li>
+<li><p>Domain</p></li>
+<li><p>Width</p></li>
+</ul>
+<p>The secondary concept to learn is to write smaller functions to tackle each individual part of the data visualization. The one we’re working on has X number. Nearly every single one relies on the margin, range, and domain to some degree. Most wouldn’t work without them.</p>
+<p>You can see how changing margin, range, and domain operates with this Shiny App.</p>
+<p>This tutorial takes you through annotations, headers, and other aesthetic choices that often make D3 look more professional. Learning these little quarks will give you more options in making more advanced visuals.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+D3 is frickin’ hard!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>D3 is without a doubt the hardest programming framework I have ever learned.</p>
+<p>It’s also quite touchy. It doesn’t do anything you didn’t ask it to do, and that also means a lack of robust error messages.</p>
+<p>Directory names, function names, parameters, etc. are all things that will cause your script to not render.</p>
+<p>So be patient with yourself. I have sometimes spent hours searching for an issue to only find out it was a simple parameter name.</p>
+<p>You may go through this tutorial completely confused. I provide checkpoints along the way so that you can copy and paste scripts in their entirety to better understand where you miss something.</p>
+<p>Concepts may not solidify either the first time around. I try my best to reduce that burden.</p>
+</div>
+</div>
+</section>
+<section id="what-this-tutorial-skips" class="level2">
+<h2 class="anchored" data-anchor-id="what-this-tutorial-skips">What This Tutorial Skips</h2>
+<p>One area of D3 relates to its data transformation functions, which are impressive and robust. I won’t have time to cover this in this tutorial and I personally stick to good ol’ <code>tidyverse</code> in R for most data prep.</p>
+<p>The one thing you should do though is rely on <code>list</code> to organize your data. Note though that this data is not limited to the data being presented, but other data points, such as annotations.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ChatGPT is quite good!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I actually have better luck asking ChatGPT questions than I do consulting with D3 documentation. I believe the reason is ChatGPT has to know how to crawl the internet, so HTML, CSS, and JavaScript are skills it learned quite well.</p>
+<p>I also find that ChatGPT is better at D3 than R and R Shiny.</p>
+<p>That said, it is still better when asking narrow questions.</p>
+</div>
+</div>
+</section>
+<section id="create-r-script" class="level2">
+<h2 class="anchored" data-anchor-id="create-r-script">Create R Script</h2>
+<p>Create an R script called <code>scrap.R</code>. This is where we’ll run evolving R code as we proceed through the tutorial.</p>
+<p>Place the following at the top:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(devtools)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="our-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="our-data-set">Our Data Set</h2>
+<p>We’ll be using the <code>freeStateData</code> package’s <code>us_treasury_data_1890s</code> data set for this visualization. This package (built by yours truly) contains economic history data (for now). I periodically update it with data I find interesting. (Feel free to use it for other projects too).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"https://github.com/Free-State-Analytics/freeStateData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Place and run the following in your <code>scrap.R</code> file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(freeStateData)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"us_treasury_data_1890s"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can run <code>?us_treasury_data_1890s</code> to see more information on this data set.</p>
+<p>We’re gonna rename this to <code>dGold</code> for now and reduce the data to something simpler.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dGold <span class="ot">&lt;-</span> us_treasury_data_1890s <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"year_month"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">"gold_certificates_in_treasury_cash"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> year_month,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gold_in_cash =</span> gold_certificates_in_treasury_cash)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dGold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        date gold_in_cash
+1 1891-07-01     34004820
+2 1891-08-01     37721280
+3 1891-09-01     28332490
+4 1891-10-01     20790420
+5 1891-11-01     19202170
+6 1891-12-01     17472720</code></pre>
+</div>
+</div>
+</section>
+<section id="transforming-to-json" class="level2">
+<h2 class="anchored" data-anchor-id="transforming-to-json">Transforming to JSON</h2>
+<p>R data.frame is not what we need for D3. D3 relies on JSON structures.</p>
+<p>Use <code>jsonlite::toJSON</code> to transform <code>dGold</code>. Assign the JSON file the name <code>jGold</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>jGold <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">toJSON</span>(dGold)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>jGold</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[{"date":"1891-07-01","gold_in_cash":34004820},{"date":"1891-08-01","gold_in_cash":37721280},{"date":"1891-09-01","gold_in_cash":28332490},{"date":"1891-10-01","gold_in_cash":20790420},{"date":"1891-11-01","gold_in_cash":19202170},{"date":"1891-12-01","gold_in_cash":17472720},{"date":"1892-01-01","gold_in_cash":17486810},{"date":"1892-02-01","gold_in_cash":18150140},{"date":"1892-03-01","gold_in_cash":23673770},{"date":"1892-04-01","gold_in_cash":21931180},{"date":"1892-05-01","gold_in_cash":14470520},{"date":"1892-06-01","gold_in_cash":15363590},{"date":"1892-07-01","gold_in_cash":17738500},{"date":"1892-08-01","gold_in_cash":23847210},{"date":"1892-09-01","gold_in_cash":25345590},{"date":"1892-10-01","gold_in_cash":23181990},{"date":"1892-11-01","gold_in_cash":19632830},{"date":"1892-12-01","gold_in_cash":24254750},{"date":"1893-01-01","gold_in_cash":15729770},{"date":"1893-02-01","gold_in_cash":7782260},{"date":"1893-03-01","gold_in_cash":5135430},{"date":"1893-04-01","gold_in_cash":8888310},{"date":"1893-05-01","gold_in_cash":3324670},{"date":"1893-06-01","gold_in_cash":1071170},{"date":"1893-07-01","gold_in_cash":93710},{"date":"1893-08-01","gold_in_cash":565370},{"date":"1893-09-01","gold_in_cash":129220},{"date":"1893-10-01","gold_in_cash":115860},{"date":"1893-11-01","gold_in_cash":149090},{"date":"1893-12-01","gold_in_cash":75590},{"date":"1894-01-01","gold_in_cash":78350},{"date":"1894-02-01","gold_in_cash":106490},{"date":"1894-03-01","gold_in_cash":137310},{"date":"1894-04-01","gold_in_cash":102770},{"date":"1894-05-01","gold_in_cash":41650},{"date":"1894-06-01","gold_in_cash":43490},{"date":"1894-07-01","gold_in_cash":103740},{"date":"1894-08-01","gold_in_cash":34730},{"date":"1894-09-01","gold_in_cash":55260},{"date":"1894-10-01","gold_in_cash":56280},{"date":"1894-11-01","gold_in_cash":751370},{"date":"1894-12-01","gold_in_cash":58960},{"date":"1895-01-01","gold_in_cash":337060},{"date":"1895-02-01","gold_in_cash":80100},{"date":"1895-03-01","gold_in_cash":84660},{"date":"1895-04-01","gold_in_cash":63640},{"date":"1895-05-01","gold_in_cash":102390},{"date":"1895-06-01","gold_in_cash":88390}] </code></pre>
+</div>
+</div>
+</section>
+<section id="create-primary-plot-javascript-function" class="level2">
+<h2 class="anchored" data-anchor-id="create-primary-plot-javascript-function">Create Primary Plot JavaScript Function</h2>
+<p>In your directory…</p>
+<ol type="1">
+<li>Create a folder called <code>D3</code></li>
+<li>Using Posit Cloud’s “D3 Script” example, save a script called <code>plot_main.js</code> within the <code>D3/</code> directory</li>
+</ol>
+<p>You should see it render in your Viewer immediately.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why `plot_main.js`?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The length of code in a single D3 data visualization will get overwhelming fast. This makes it much more difficult to trouble shoot.</p>
+<p>For that reason, we have a single script that will contain more specialized scripts in the future.</p>
+</div>
+</div>
+</section>
+<section id="create-render-plot-r-function" class="level2">
+<h2 class="anchored" data-anchor-id="create-render-plot-r-function">Create Render Plot R Function</h2>
+<p>In <code>scrap.R</code>, add the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>r2d3<span class="sc">::</span><span class="fu">r2d3</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span>, <span class="fl">0.95</span>, <span class="fl">0.40</span>, <span class="fl">0.20</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">script =</span> <span class="st">"D3/plot_main.js"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="r2d3 html-widget html-fill-item" id="htmlwidget-90850a5cd52a177838a5" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-90850a5cd52a177838a5">{"x":{"data":[0.3,0.6,0.8,0.95,0.4,0.2],"type":"numeric","container":"svg","options":null,"script":"var d3Script = function(d3, r2d3, data, svg, width, height, options, theme, console) {\nthis.d3 = d3;\n\nsvg = d3.select(svg.node());\n/* R2D3 Source File:  /cloud/project/D3/plot_main.js */\nconst margin = {top: 100, bottom: 100, right: 100, left: 100}\n\n// Stage One: Define min and max values of interest\nconst y_min = 0;\nconst y_max = 37500000;\n\n// Stage Two: Define dimensions\nconst y_dimension = d3.scaleLinear()\n  .domain([y_min, y_max])\n  .range([height, 0]);\n \n// Stage Three: Define aesthetics\nconst y_aesthetic = d3.axisLeft(y_dimension);\n\n// Stage Four: Append to SVG\nsvg.append(\"g\")\n  .attr(\"transform\", `translate(${margin.left}, 0)`)\n  .call(y_aesthetic);\n  \n  \n// Stage One: Define min and max values of interest  \nconst x_min = new Date(\"1892-11-01\");\nconst x_max = new Date(\"1893-12-31\");  \n\n// Stage Two: Define dimensions\nconst x_dimension = d3.scaleLinear()\n  .domain([x_min, x_max])\n  .range([margin.left, width]);\n  \n// Stage Three: Define aesthetics\nconst x_aesthetic = d3.axisBottom(x_dimension)\n  \n// Stage Four: Append to SVG\nsvg.append(\"g\")\n  .call(x_aesthetic);\n    \n  \n   // .attr(\"class\", \"y-axis\")\n  \n   // .attr(\"transform\", `translate(${100}, 0)`)\n};","style":null,"version":6,"theme":{"default":{"background":"#FFFFFF","foreground":"#000000"},"runtime":null},"useShadow":true},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What is svg?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you notice, our <code>plot_main.js</code> currently references an object called <code>svg</code>.</p>
+<p><code>r2d3</code> generates an svg div in HTML by default. Any further code we write appends to this div or modifies it.</p>
+<p>The wiki definition for svg is: Scalable Vector Graphics is an XML-based vector image format for defining two-dimensional graphics, having support for interactivity and animation.</p>
+</div>
+</div>
+</section>
+<section id="checkpoint" class="level2">
+<h2 class="anchored" data-anchor-id="checkpoint">Checkpoint!</h2>
+<p>We’re going to provide check points frequently now. Things are about to get super hard! Check to make sure your <code>scrap.R</code> file matches below and that the D3 visualizatoin renders to your Viewer.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(devtools)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(freeStateData)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"us_treasury_data_1890s"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>dGold <span class="ot">&lt;-</span> us_treasury_data_1890s <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"year_month"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>         <span class="st">"gold_certificates_in_treasury_cash"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> year_month,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">gold_in_cash =</span> gold_certificates_in_treasury_cash)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>jGold <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">toJSON</span>(dGold)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>jGold</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">r2d3</span>(</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span>, <span class="fl">0.95</span>, <span class="fl">0.40</span>, <span class="fl">0.20</span>),</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">script =</span> <span class="st">"D3/plot_main.js"</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="swap-out-data" class="level2">
+<h2 class="anchored" data-anchor-id="swap-out-data">Swap Out Data</h2>
+<p>Building a D3 visualizations means building pieces that won’t necessarily appear yet. Have faith in the process, but also follow instructions closely. If it helps, copy and paste the code you see directly from this tutorial.</p>
+<p>First, let’s replace our <code>data</code> parameter in <code>r2d3</code> with <code>jGold</code> in our <code>scrap.R</code> file:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">r2d3</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jGold,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">script =</span> <span class="st">"D3/plot_main.js"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This will make the rendering unavailable for the time being.</p>
+</section>
+<section id="creating-y-axis" class="level2">
+<h2 class="anchored" data-anchor-id="creating-y-axis">Creating Y-Axis</h2>
+<p>Now that we’re feeding proper data to our D3 plot, let’s add the axises. We’re going to start with the y-axis, because the formatting is easier to understand and it’ll help ease us into the key concepts.</p>
+<p>There are actually four stages to producing an axis:</p>
+<ol type="1">
+<li>Define the min and max value for your axis</li>
+<li>Define the dimensions of the axis</li>
+<li>Define aesthetics of the axis</li>
+<li>Append axis to your svg</li>
+</ol>
+<p>The variables or “bindings” in one stage are referenced in the next.</p>
+<p>That’s a lot of work for just one axis, right?</p>
+<p>And each steps has lots of fine little nuances that if you do wrong, nothing works!</p>
+<section id="define-min-and-max-value-for-axis" class="level3">
+<h3 class="anchored" data-anchor-id="define-min-and-max-value-for-axis">Define Min and Max Value for Axis</h3>
+<p>We’re going to hard code the min and max vlaue for our axis in this tutorial. Looking at <code>max(dGold$gold_in_cash)</code>, we see that the max value is <code>37721280</code>. We’re going to round up to <code>37500000</code> for this tutorial, but you can use D3’s robust data prep functions to dynamically select the max value.</p>
+<p>Within <code>plot_main.js</code>, we’re going to delete everything and add the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage One: Define min and max values of interest</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_min <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_max <span class="op">=</span> <span class="dv">37500000</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>const</code> is a “binding” in JavaScript that makes it easier to pass around values, much in the same way an object name does in R.</p>
+</section>
+<section id="define-dimensions-of-the-axis" class="level3">
+<h3 class="anchored" data-anchor-id="define-dimensions-of-the-axis">Define Dimensions of the Axis</h3>
+<p>We’re going to create another binding which defines the dimensions the axis should follow. We’ll call it <code>y_dimension</code>.</p>
+<p>We’ll have to define the type of axis we’re defining. In this example, we are looking at numeric data with a linear scale. So we’ll use <code>d3.scaleLinear</code>.</p>
+<p>You can see all the options for D3’s scales here <strong>provide link</strong></p>
+<p>In <code>plot_main.js</code>, add the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That doesn’t do anything though. We have to define the dimensions, which rely crucially on two key concepts mentioned at the start of the tutorial: domain and range.</p>
+<p><strong>Domain</strong> is the dimension in relation to the actual data (i.e., the min value and the max value of interest). We pass a JavaScript array to the <code>.domain()</code> function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([y_min<span class="op">,</span> y_max])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As you can tell, an <a href="https://eloquentjavascript.net/04_data.html#h-k6fyJHbpdU">array in JavaScript</a> is not like an array in R.</p>
+<p><strong>Range</strong> is the dimension in relation to the SVG (i.e., how far does the axis traverse across the overall image).</p>
+<p>We will pass an array <code>[0, height]</code> through <code>.range()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([y_min<span class="op">,</span> y_max])</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> height])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>height</code> is a default variable added to your D3 script via <code>r2d3</code>. It basically encompasses the entire view port available.</p>
+<p>Your complete <code>plot_main.js</code> up to this point should look like the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage One: Define min and max values of interest</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_min <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_max <span class="op">=</span> <span class="dv">37500000</span><span class="op">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([y_min<span class="op">,</span> y_max])</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> height])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Keep in mind, you won’t see anything yet in your Viewer window.</p>
+</section>
+<section id="define-aesthetics" class="level3">
+<h3 class="anchored" data-anchor-id="define-aesthetics">Define Aesthetics</h3>
+<p><code>y_dimension</code> defines how the data will place itself in relation to the SVG. It does not really define how axis itself will appear. That is what our next binding <code>y_aesthetics</code> will do.</p>
+<p>We’ll pass <code>y_dimension</code> as a param to D3’s <code>axisLeft()</code>. This first defines that we want the axis to be treated as left axis, which passes defaults to the labels of interest.</p>
+<p>You can read more about axises here: <strong>provide link</strong></p>
+<p>In <code>plot_main.js</code>, add the following at the bottom:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Three: Define aesthetics</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_aesthetic <span class="op">=</span> d3<span class="op">.</span><span class="fu">axisLeft</span>(y_dimension)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will be sprucing <code>y_aesthetic</code> up further later, but for now, we’re going to rely on defaults.</p>
+</section>
+<section id="append-axis-to-svg" class="level3">
+<h3 class="anchored" data-anchor-id="append-axis-to-svg">Append Axis to SVG</h3>
+<p>We built bindings that will inform D3 what we want to see in our axis. However, we haven’t updated our SVG yet to use this information.</p>
+<p>In <code>plot_main.js</code>, add the following to the bottom:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(y_aesthetic)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This appends a <code>g</code> div to your <code>svg</code>. You then call your <code>y_aesthetic</code> binding, which references your <code>y_dimension</code> binding, which references your <code>y_min</code> and <code>y_max</code> binding, to inform the new <code>g</code> what it should look like.</p>
+<p>Your complete <code>plot_main.js</code> script should look like:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage One: Define min and max values of interest</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_min <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_max <span class="op">=</span> <span class="dv">37500000</span><span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([y_min<span class="op">,</span> y_max])</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> height])<span class="op">;</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Three: Define aesthetics</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_aesthetic <span class="op">=</span> d3<span class="op">.</span><span class="fu">axisLeft</span>(y_dimension)<span class="op">;</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(y_aesthetic)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now run the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>r2d3<span class="sc">::</span><span class="fu">r2d3</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jGold,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">script =</span> <span class="st">"D3/plot_main.js"</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-margin" class="level3">
+<h3 class="anchored" data-anchor-id="adding-margin">Adding Margin</h3>
+<p>If you notice, our line is at the far edge. There are actual labels on our axis, but we can’t see them.</p>
+<p>Let’s move our axis to the right by adding some margin space. We can do this by modify Stage Four’s <code>svg.append()</code> function and adding a CSS attribute that says “transform” by nudging <strong><em>100 pixels to the right</em></strong>.ISthisright?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">attr</span>(<span class="st">"transform"</span><span class="op">,</span> <span class="vs">`translate(100, 0)`</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(y_aesthetic)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="flipping-our-axis" class="level3">
+<h3 class="anchored" data-anchor-id="flipping-our-axis">Flipping Our Axis</h3>
+<p>Now re-run your <code>r2d3</code> script in <code>scrap.R</code>. Notice anything funny?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>r2d3<span class="sc">::</span><span class="fu">r2d3</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jGold,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">script =</span> <span class="st">"D3/plot_main.js"</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="r2d3 html-widget html-fill-item" id="htmlwidget-d8ccfca8f589869d4fe6" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-d8ccfca8f589869d4fe6">{"x":{"data":[{"date":"1891-07-01","gold_in_cash":34004820},{"date":"1891-08-01","gold_in_cash":37721280},{"date":"1891-09-01","gold_in_cash":28332490},{"date":"1891-10-01","gold_in_cash":20790420},{"date":"1891-11-01","gold_in_cash":19202170},{"date":"1891-12-01","gold_in_cash":17472720},{"date":"1892-01-01","gold_in_cash":17486810},{"date":"1892-02-01","gold_in_cash":18150140},{"date":"1892-03-01","gold_in_cash":23673770},{"date":"1892-04-01","gold_in_cash":21931180},{"date":"1892-05-01","gold_in_cash":14470520},{"date":"1892-06-01","gold_in_cash":15363590},{"date":"1892-07-01","gold_in_cash":17738500},{"date":"1892-08-01","gold_in_cash":23847210},{"date":"1892-09-01","gold_in_cash":25345590},{"date":"1892-10-01","gold_in_cash":23181990},{"date":"1892-11-01","gold_in_cash":19632830},{"date":"1892-12-01","gold_in_cash":24254750},{"date":"1893-01-01","gold_in_cash":15729770},{"date":"1893-02-01","gold_in_cash":7782260},{"date":"1893-03-01","gold_in_cash":5135430},{"date":"1893-04-01","gold_in_cash":8888310},{"date":"1893-05-01","gold_in_cash":3324670},{"date":"1893-06-01","gold_in_cash":1071170},{"date":"1893-07-01","gold_in_cash":93710},{"date":"1893-08-01","gold_in_cash":565370},{"date":"1893-09-01","gold_in_cash":129220},{"date":"1893-10-01","gold_in_cash":115860},{"date":"1893-11-01","gold_in_cash":149090},{"date":"1893-12-01","gold_in_cash":75590},{"date":"1894-01-01","gold_in_cash":78350},{"date":"1894-02-01","gold_in_cash":106490},{"date":"1894-03-01","gold_in_cash":137310},{"date":"1894-04-01","gold_in_cash":102770},{"date":"1894-05-01","gold_in_cash":41650},{"date":"1894-06-01","gold_in_cash":43490},{"date":"1894-07-01","gold_in_cash":103740},{"date":"1894-08-01","gold_in_cash":34730},{"date":"1894-09-01","gold_in_cash":55260},{"date":"1894-10-01","gold_in_cash":56280},{"date":"1894-11-01","gold_in_cash":751370},{"date":"1894-12-01","gold_in_cash":58960},{"date":"1895-01-01","gold_in_cash":337060},{"date":"1895-02-01","gold_in_cash":80100},{"date":"1895-03-01","gold_in_cash":84660},{"date":"1895-04-01","gold_in_cash":63640},{"date":"1895-05-01","gold_in_cash":102390},{"date":"1895-06-01","gold_in_cash":88390}],"type":"json","container":"svg","options":null,"script":"var d3Script = function(d3, r2d3, data, svg, width, height, options, theme, console) {\nthis.d3 = d3;\n\nsvg = d3.select(svg.node());\n/* R2D3 Source File:  /cloud/project/D3/plot_main.js */\nconst margin = {top: 100, bottom: 100, right: 100, left: 100}\n\n// Stage One: Define min and max values of interest\nconst y_min = 0;\nconst y_max = 37500000;\n\n// Stage Two: Define dimensions\nconst y_dimension = d3.scaleLinear()\n  .domain([y_min, y_max])\n  .range([height, 0]);\n \n// Stage Three: Define aesthetics\nconst y_aesthetic = d3.axisLeft(y_dimension);\n\n// Stage Four: Append to SVG\nsvg.append(\"g\")\n  .attr(\"transform\", `translate(${margin.left}, 0)`)\n  .call(y_aesthetic);\n  \n  \n// Stage One: Define min and max values of interest  \nconst x_min = new Date(\"1892-11-01\");\nconst x_max = new Date(\"1893-12-31\");  \n\n// Stage Two: Define dimensions\nconst x_dimension = d3.scaleLinear()\n  .domain([x_min, x_max])\n  .range([margin.left, width]);\n  \n// Stage Three: Define aesthetics\nconst x_aesthetic = d3.axisBottom(x_dimension)\n  \n// Stage Four: Append to SVG\nsvg.append(\"g\")\n  .call(x_aesthetic);\n    \n  \n   // .attr(\"class\", \"y-axis\")\n  \n   // .attr(\"transform\", `translate(${100}, 0)`)\n};","style":null,"version":6,"theme":{"default":{"background":"#FFFFFF","foreground":"#000000"},"runtime":null},"useShadow":true},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>This is how touchy little arguments are with regards to D3. What happened is that we mapped our range <code>[0, height]</code> to our domain <code>[y_min, y_max]</code> by saying that <code>0</code> corresponds to <code>y_min</code>. Really, we want <code>0</code> to correspond to <code>y_max</code>.</p>
+<p>We can modify <code>y_dimension</code> to account for this:</p>
+<div class="cell">
+<script>
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height, 0]);
+</script>
+</div>
+<p>And our complete <code>plot_main.js</code> script is like so:</p>
+<div class="cell">
+<script>
+// Stage One: Define min and max values of interest
+const y_min = 0;
+const y_max = 37500000;
+
+// Stage Two: Define dimensions
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height, 0]);
+ 
+// Stage Three: Define aesthetics
+const y_aesthetic = d3.axisLeft(y_dimension);
+
+// Stage Four: Append to SVG
+svg.append("g")
+  .attr("transform", `translate(100, 0)`)
+  .call(y_aesthetic);
+</script>
+</div>
+</section>
+</section>
+<section id="creating-x-axis" class="level2">
+<h2 class="anchored" data-anchor-id="creating-x-axis">Creating X-Axis</h2>
+<p>We have one axis done! Quite a bit of work, right? Now we’ll have to add the x-axis.</p>
+<p>Once again, we’ll have four stages:</p>
+<ol type="1">
+<li>Define the min and max value for your axis</li>
+<li>Define the dimensions of the axis</li>
+<li>Define aesthetics of the axis</li>
+<li>Append axis to your svg</li>
+</ol>
+<section id="define-min-and-max-value-for-axis-1" class="level3">
+<h3 class="anchored" data-anchor-id="define-min-and-max-value-for-axis-1">Define Min and Max Value for Axis</h3>
+<p>Much like the y-axis, we want to hardcode our values for now. Unlike the y-axis, we’ll pick specific values rather than select the values found in the data set.</p>
+<p>We want our min date to be <code>1892-11-01</code> and max date to be <code>1893-12-31</code>.</p>
+<p>However, we’ll have to translate those values to be something JavaScript can understand. (This is a good example of ChatGPT being helpful.)</p>
+<p>Within <code>plot_main.js</code>, place the following near the bottom of the script:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage One: Define min and max values of interest  </span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_min <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(<span class="st">"1892-11-01"</span>)<span class="op">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_max <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(<span class="st">"1893-12-31"</span>)<span class="op">;</span>  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="define-dimensions-of-the-axis-1" class="level3">
+<h3 class="anchored" data-anchor-id="define-dimensions-of-the-axis-1">Define Dimensions of the Axis</h3>
+<p>Much like before, we’re gonna create a binding called <code>x_dimension</code> to define the dimensiosn of our x-axis. Unlike before, we have to use a different scale. Since this relates to datetimes, we’ll use <code>d3.scaleTime</code>. You can see all the options for D3’s scales here <strong>provide link</strong></p>
+<p>In <code>plot_main.js</code>, add the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleTime</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We’ll define our <code>.domain</code> in a similar way as before:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([x_min<span class="op">,</span> x_max])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And our range using <code>width</code> instead. (Notice that <code>width</code> needs to correspond to <code>x_max</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([x_min<span class="op">,</span> x_max])</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> width])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>width</code> is a default variable added to your D3 script via <code>r2d3</code>, much like <code>height</code>. It covers the width of the viewport and makes D3 data visualizations dynamic when they resize.</p>
+</section>
+<section id="define-aesthetics-1" class="level3">
+<h3 class="anchored" data-anchor-id="define-aesthetics-1">Define Aesthetics</h3>
+<p>Our next binding <code>x_aesthetic</code> will be similar to before, only we will use <code>axisBottom</code>.</p>
+<p>You can read more about axises here: <strong>provide link</strong></p>
+<p>In <code>plot_main.js</code>, add the following at the bottom:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Three: Define aesthetics</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_aesthetic <span class="op">=</span> d3<span class="op">.</span><span class="fu">axisBottom</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will be sprucing <code>y_aesthetic</code> up further later, but for now, we’re going to rely on defaults.</p>
+</section>
+<section id="append-axis-to-svg-1" class="level3">
+<h3 class="anchored" data-anchor-id="append-axis-to-svg-1">Append Axis to SVG</h3>
+<p>Finally, we need to append our SVG.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(x_aesthetic)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Our complete <code>plot_main.js</code> script should look like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage One: Define min and max values of interest</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_min <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_max <span class="op">=</span> <span class="dv">37500000</span><span class="op">;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([y_min<span class="op">,</span> y_max])</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([height<span class="op">,</span> <span class="dv">0</span>])<span class="op">;</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Three: Define aesthetics</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> y_aesthetic <span class="op">=</span> d3<span class="op">.</span><span class="fu">axisLeft</span>(y_dimension)<span class="op">;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">attr</span>(<span class="st">"transform"</span><span class="op">,</span> <span class="vs">`translate(100, 0)`</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(y_aesthetic)<span class="op">;</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage One: Define min and max values of interest  </span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_min <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(<span class="st">"1892-11-01"</span>)<span class="op">;</span></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_max <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>(<span class="st">"1893-12-31"</span>)<span class="op">;</span>  </span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([x_min<span class="op">,</span> x_max])</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> width])<span class="op">;</span></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Three: Define aesthetics</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_aesthetic <span class="op">=</span> d3<span class="op">.</span><span class="fu">axisBottom</span>(x_dimension)</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(x_aesthetic)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="there-is-a-lot-wrong-here" class="level3">
+<h3 class="anchored" data-anchor-id="there-is-a-lot-wrong-here">There Is a Lot Wrong Here</h3>
+<p>When you re-run your <code>scrap.R</code> file, we find a lot wrong with the rendering.</p>
+<p>Much of this has to do with margins. Some of it has to do with the values used in <code>x_aesthetic</code> and <code>y_aesthetic</code>.</p>
+<p>Also, our script is getting long. We’ll need to slim that down.</p>
+<p>We’re gonna tackle the margins for now.</p>
+</section>
+</section>
+<section id="define-and-pass-margins" class="level2">
+<h2 class="anchored" data-anchor-id="define-and-pass-margins">Define and Pass Margins</h2>
+<p><strong>Margins</strong> are a key concept in D3 that will show up a lot. Most tutorials you’ll find have margins as a default value. And it’s important to define them in once place because you use them everywhere!</p>
+<p>For that reason, it’s best to define them in one place.</p>
+<p>At the top of <code>plot_main.js</code>, add the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> margin <span class="op">=</span> {<span class="dt">top</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span> <span class="dt">bottom</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span> <span class="dt">right</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span> <span class="dt">left</span><span class="op">:</span> <span class="dv">100</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we need to adjust the x- and y-axis to use these margins.</p>
+<p>Let’s line up the left margin first.</p>
+<section id="modify-x--and-y-axis-to-use-margin.left" class="level3">
+<h3 class="anchored" data-anchor-id="modify-x--and-y-axis-to-use-margin.left">Modify X- and Y-Axis to Use <code>margin.left</code></h3>
+<p>Modify the “transform” attribute for our <code>g</code> div for the y-axis like so:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Four: Append to SVG</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>svg<span class="op">.</span><span class="fu">append</span>(<span class="st">"g"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">attr</span>(<span class="st">"transform"</span><span class="op">,</span> <span class="vs">`translate(</span><span class="sc">${</span>margin<span class="op">.</span><span class="at">left</span><span class="sc">}</span><span class="vs">, 0)`</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">call</span>(y_aesthetic)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And now modify <code>x_dimension</code> to do the same:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stage Two: Define dimensions</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> x_dimension <span class="op">=</span> d3<span class="op">.</span><span class="fu">scaleLinear</span>()</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">domain</span>([x_min<span class="op">,</span> x_max])</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">range</span>([margin<span class="op">.</span><span class="at">left</span><span class="op">,</span> width])<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why did we add `margin.left` in differnet places for x- and y-axis?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You may have noticed that we updated the <code>range()</code> for the x-axis to use <code>margin.left</code>, but updated the attribute of <code>g</code> div for our y-axis. Why?</p>
+<p>Well, it has to do with what these are working on. <code>y_dimension</code> focused on defining how our future bar graph will expand and contract vertically. That means it doesn’t need to think about where it goes on the x-axis. However, we want to change its x-axis position. We do that by changing where <code>g</code> is placed.</p>
+<p>Oppositely, <code>x_dimension</code> is concerned with how our future bar graph will interpret data on a horizontal scale. <code>margin.left</code> is crucial for determining that placement. So we have to use that information in the <code>range</code>.</p>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

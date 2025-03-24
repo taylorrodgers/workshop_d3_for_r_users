@@ -1,0 +1,77 @@
+svg {
+  font-family: "Source Sans 3";
+}
+
+.highlight {
+  fill: #AC882A;
+}
+
+line.highlight  {
+  stroke: #AC882A;
+  stroke-width: 1;
+}
+
+.standard {
+  fill: #373735;
+}
+
+line.standard {
+  stroke: #373735;
+}
+
+.y-axis, .x-axis {
+  font-family: "Source Sans 3";
+  font-weight: 300;
+  font-size: .8em;
+}
+
+.header-primary {
+  font-size: 2em;
+  font-weight: 400;
+  fill: #373735;
+}
+
+.header-primary-medium {
+  font-size: 1.5em;
+  font-weight: 400;
+  fill: #373735;
+}
+
+.header-primary-small {
+  font-size: 1em;
+  font-weight: 400;
+  fill: #373735;
+}
+
+.header-secondary {
+  font-size: 1.5em;
+  font-weight: 300;
+  fill: #373735;
+}
+
+.header-secondary-medium {
+  font-size: 1.25em;
+  font-weight: 300;
+  fill: #373735;
+}
+
+.header-secondary-small {
+  font-size: .75em;
+  font-weight: 300;
+  fill: #373735;
+}
+.axis-label {
+  font-weight: 300;
+  fill: #373735; 
+}
+
+.text-annotation {
+  font-weight: 500;
+}
+
+.text-source {
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1em;
+  text-anchor: end;
+}
