@@ -15,4 +15,4 @@ jGold <- jsonlite::toJSON(dGold)
 
 source("R/plot_gold_viz.R")
 
-plot_gold_viz()
+plot_gold_viz(jGold)

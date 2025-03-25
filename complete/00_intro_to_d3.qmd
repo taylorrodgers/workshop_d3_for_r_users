@@ -124,6 +124,18 @@ I also find that ChatGPT is better at D3 than R and R Shiny.
 That said, it is still better when asking narrow questions.
 :::
 
+## Recommended: Create a Mockup
+
+Normally, I think it overkill to create a mockup of a single data visualization. However, it's actually a good idea when it comes to D3.
+
+One simple reason is that it helps keep you inspired, since you won't see the fruit of your work right away.
+
+The second reason is that D3 requires such minute coding that it doesn't allow for as much iteration, especially when it comes to aesthetics and interactivity.
+
+We'll be building something simple today, so the mockup's primary benefit will be for us to pick colors and aesthetics up front.
+
+(show mockup)
+
 ## Create R Script
 
 Create an R script called `scrap.R`. This is where we'll run evolving R code as we proceed through the tutorial.
@@ -158,6 +170,8 @@ We're gonna rename this to `dGold` for now and reduce the data to something simp
 
 ```{r}
 dGold <- us_treasury_data_1890s %>%
+  filter(as.Date(year_month) >= as.Date("1892-11-01"),
+         as.Date(year_month) <= as.Date("1893-12-31")) %>%
   select("year_month",
          "gold_certificates_in_treasury_cash") %>%
   rename(
@@ -741,17 +755,17 @@ Our script is getting longer. It's getting more confusing. Thankfully, we can st
 
 We're gonna move our x- and y-axis scripts into indiviual functions out of `plot_main.js`. We're gonna call them:
 
-1.  `plot_axis_x.js`
-2.  `plot_axis_y.js`
+1.  `plot_x_axis.js`
+2.  `plot_y_axis.js`
 
 We're also gonna modify our `r2d3` script to use those new files and create a callable function to make it easier to render.
 
-### Create `plot_axis_x.js`
+### Create `plot_x_axis.js`
 
 agak;g
 
 ```{js, eval = FALSE}
-function plot_axis_x(svg, margin) {
+function plot_x_axis(svg, margin) {
   // Stage One: Define min and max values of interest  
   const x_min = new Date("1892-11-01");
   const x_max = new Date("1893-12-31");  
@@ -771,12 +785,12 @@ function plot_axis_x(svg, margin) {
 }
 ```
 
-### Create `plot_axis_y.js`
+### Create `plot_y_axis.js`
 
 agak;g
 
 ```{js, eval = FALSE}
-function plot_axis_y(svg, margin) {
+function plot_y_axis(svg, margin) {
   
   // Stage One: Define min and max values of interest
   const y_min = 0;
@@ -805,8 +819,8 @@ And here is updated `plot_main.js`:
 const margin = {top: 100, bottom: 100, right: 100, left: 100};
 
 // Create x- and y-axis
-plot_axis_y(svg, margin);
-plot_axis_x(svg, margin);
+plot_y_axis(svg, margin);
+plot_x_axis(svg, margin);
 ```
 
 We'll have to update our `r2d3` script to use these additional files:
@@ -814,7 +828,7 @@ We'll have to update our `r2d3` script to use these additional files:
 ```{r, eval = FALSE}
 r2d3::r2d3(
   data = jGold,
-  script = c("D3/plot_main.js", "D3/plot_axis_x.js", "D3/plot_axis_y.js")
+  script = c("D3/plot_main.js", "D3/plot_x_axis.js", "D3/plot_y_axis.js")
 )
 ```
 
@@ -843,7 +857,7 @@ plot_gold_viz <- function(jGold, directory_path = "Cloud/project/D3") {
 
   r2d3::r2d3(
     data = jGold,
-    script = c("D3/plot_main.js", "D3/plot_axis_x.js", "D3/plot_axis_y.js")
+    script = paste0("D3/",js_scripts)
   )
   
 }
@@ -873,3 +887,314 @@ plot_gold_viz()
 ```
 
 Now all you have to do is run `plot_gold_viz()` and your D3 viz will take any additional `.js` files required.
+
+## Improve Axis Tick Labels
+
+Right now, neither of our axis tick labels look very good. The dates don't look like dates at all. The numbers on the right are too big.
+
+Being largely an aesthetic consideration, unrelated to the actual scaling of data to size of the axis and the SVG, we are naturally going to update `y_aesthetic` and `x_aesthetic`.
+
+### Updating X-Axis Tick Label
+
+The x-axis needs a time formatter to create a biding with teh appropriate labels. <https://d3js.org/d3-time-format>
+
+We then have to update the tick's format with this formatter binding. <https://d3js.org/d3-axis#axis_tickFormat>
+
+```{js, eval = FALSE}
+// Stage Three: Define aesthetics
+const format_date = d3.utcFormat("%y %b");
+
+const x_aesthetic = d3.axisBottom(x_dimension)
+  .tickFormat(format_date);
+```
+
+### Updating Y-Axis Tick Label
+
+The y-axis does not need to use the specialized `utcFormat` function. It'll use D3's `format` to first turn the label into a currency and then apply that binding using `tickFormat()`.
+
+This is made useless by the fact that we want to present our numbers at "M". So I find it easier to simply attach the "\$" and "M" directly to it.
+
+```{js, eval = FALSE}
+// Stage Three: Define aesthetics
+const format_currency = d3.format("($")
+
+const y_aesthetic = d3.axisLeft(y_dimension)
+  .tickFormat(d => format_currency(d / 1000000) + "M");
+  
+// Alternative
+const y_aesthetic = d3.axisLeft(y_dimension)
+  .tickFormat(d => "$" + (d / 1000000) + "M");
+```
+
+## Adding Shapes
+
+D3 visualizations rely heavily on shapes for most standard data visualizations. Shapes are drawings that take instructions from the data you pass it. Since we defined the margins, domain, and range with our current functions, they know where to place themselves in relation to the x and y axis.
+
+<https://d3js.org/d3-shape>
+
+## Create Line Shape
+
+For now, we're gonna start with a line plot. In your `D3/` directory, create `plot_line.js`.
+
+Within that file, we'll create a new function.
+
+```{js, eval = FALSE}
+function plot_line(svg, data, x_dimension, y_dimension) {
+
+}
+```
+
+You may notice that we have four parameters to pass to this JS function. Two look quite familiar.
+
+In order for us to simply pass those two, we need to turn them into bindings that canb e passed as parameters.
+
+### Modularize `x_dimension` and `y_dimension`
+
+Unfortunately, `x_dimension` and `y_dimension` are not yet available. We could modify `plot_axis_y` and `plot_x_axis` to return them. However, this may confused the purpose those functions in our `plot_main.js` script.
+
+So let's separate those out!
+
+Create two additional files in your `D3/` directory.
+
+One called `plot_x_dimension.js` ...
+
+```{js, eval = FALSE}
+function plot_x_dimension() {
+  // Stage One: Define min and max values of interest  
+  const x_min = new Date("1892-11-01");
+  const x_max = new Date("1893-12-31");  
+  
+  // Stage Two: Define dimensions
+  const x_dimension = d3.scaleLinear()
+    .domain([x_min, x_max])
+    .range([margin.left, width - margin.right]);
+    
+  return x_dimension;
+}
+```
+
+... and the other `plot_y_dimension.js`.
+
+```{js, eval = FALSE}
+function plot_y_dimension() {
+  // Stage One: Define min and max values of interest
+  const y_min = 0;
+  const y_max = 37500000;
+  
+  // Stage Two: Define dimensions
+  const y_dimension = d3.scaleLinear()
+    .domain([y_min, y_max])
+    .range([height - margin.bottom, margin.top]);
+    
+  return y_dimension;
+}
+```
+
+We'll have to modify `plot_main.js` to use define the binding.
+
+```{js, eval = FALSE}
+const margin = {top: 100, bottom: 100, right: 100, left: 100};
+
+// Create x and y dimensions
+const x_dimension = plot_x_dimension(svg, margin)
+const y_dimension = plot_y_dimension(svg, margin)
+
+// Create x- and y-axis
+plot_x_axis(svg, margin, x_dimension);
+plot_y_axis(svg, margin, y_dimension);
+
+// Add line
+plot_line(svg, data, x_dimension, y_dimension);
+```
+
+We'll need to modify our `plot_x_axis` and `plot_y_axis` to use this as a parameter.
+
+Here is `plot_x_axis.js`...
+
+```{js, eval = FALSE}
+function plot_x_axis(svg, margin, x_dimension) {
+  // Stage Three: Define aesthetics
+  const format_date = d3.utcFormat("%y %b");
+  
+  const x_aesthetic = d3.axisBottom(x_dimension)
+    .tickFormat(format_date);
+    
+  // Stage Four: Append to SVG
+  svg.append("g")
+    .attr("transform", `translate(0, ${height - margin.bottom})`)
+    .call(x_aesthetic);
+    
+  return x_dimension;
+}
+```
+
+...and here is `plot_y_axis.js`
+
+```{js, eval = FALSE}
+function plot_y_axis(svg, margin, y_dimension) {
+  
+  // Stage Three: Define aesthetics
+  const y_aesthetic = d3.axisLeft(y_dimension)
+    .tickFormat(d => "$" + (d / 1000000) + "M");
+  
+  // Stage Four: Append to SVG
+  svg.append("g")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .call(y_aesthetic);
+  
+}
+```
+
+### Back to `plot_line.js`
+
+Back to our empty `plot_line.js` function. We are appending a visual element to our SVG. So we'll start with that...
+
+```{js, eval = FALSE}
+function plot_line(svg, data, x_dimension, y_dimension) {
+  
+  svg.append("path")
+  
+}
+```
+
+### Provide Data for Your Shape
+
+We'll need to inform the new path the data it will use to create its shape.
+
+```{js, eval = FALSE}
+function plot_line(svg, data, x_dimension, y_dimension) {
+  
+  svg.append("path")
+    .datum(data)
+
+}
+```
+
+### Add Line
+
+How
+
+```{js, eval = FALSE}
+function plot_line(svg, data, x_dimension, y_dimension) {
+  
+  svg.append("path")
+    .datum(data)
+    .attr("d", d3.line()
+      .x(function(d) {return x_dimension(new Date(d.date))})
+      .y(function(d) {return y_dimension(d.gold_in_cash)})
+    );
+
+}
+```
+
+### Add Style Arguments
+
+What is supposed to be a line on our plot look like a black void of despair. Thankfully, SVG can respond to CSS style arguments, much in the same way any HTML tag can.
+
+```{js, eval = FALSE}
+function plot_line(svg, data, x_dimension, y_dimension) {
+  
+  svg.append("path")
+    .datum(data)
+    .attr("d", d3.line()
+      .x(function(d) {return x_dimension(new Date(d.date))})
+      .y(function(d) {return y_dimension(d.gold_in_cash)})
+    )
+    .style("stroke", "blue")
+    .style("stroke-width", 1.5)
+    .style("fill", "none");
+
+}
+```
+
+There will be different ways we manage the style arguemnts later. For now this will do.
+
+## Create Dots
+
+Our mockup showed that we had dots to add to the lines. The good news is we have everything in place to do this!
+
+We're going to create a new file called `plot_dots.js` to place in our `D3/` directory.
+
+```{js, eval = FALSE}
+function plot_dot(svg, data, x_dimension, y_dimension) {
+  svg.selectAll("circle") 
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) {return x_dimension(new Date(d.date))})
+    .attr("cy", function (d) { return y_dimension(d.gold_in_cash); }) 
+    .style("r", 5) 
+    .style("fill", "green"); 
+}
+
+```
+
+::: callout-important
+## data vs. datum
+
+asgag
+
+`datum` and `data().enter()`
+:::
+
+## Add Our Headings
+
+If you recall our mockup, we had a heading and a subheading.
+
+(show mockup)
+
+Let's go ahead and add those. Yes, just like before, we'll make a function.
+
+In your `D3/` directory, create the file `plot_header.js`.
+
+```{js, eval = FALSE}
+function plot_header(svg, margin) {
+  
+  svg.append("text")
+    .attr("x", margin.left)
+    .attr("y", margin.top * .15)
+    .text("U.S. Gold Certificates in Treasury Cash")
+    
+  svg.append("text")
+    .attr("x", margin.left)
+    .attr("y", margin.top * .50)
+    .text("From November 1892 until December 1893")
+  
+}
+```
+
+## Beautification of Our Visualization
+
+Aesthetically... our D3 visualization isn't very pretty. That's ironic, because what is usually so cool about D3 is the user-experience for the audience.
+
+But that UX usually comes from the precision programming, which requires all the functional aspects to be determined first.
+
+Now, we can work on making our visualization LOOK more like our mockup.
+
+You may have noticed, we can apply `style` directly to our various components. However, this doesn't make it easy to manage across functions. Particularly as we start to produce new visualizations using the same items.
+
+This is where a `.css` style sheet comes in handy!
+
+## Create a `.css` File
+
+In your `D3/` directory, create the file `style.css`.
+
+We're first gonna define our two colors.
+
+```{css, eval = FALSE}
+:root {
+  --primary-color: #373735; 
+  --secondary-color: #AC882A;
+}
+```
+
+Next, we're gonna define our `plot-line` class.
+
+```{css, eval = FALSE}
+plot-line { 
+  stroke: var(--primary-color); 
+  stroke-width: 2.5; fill: none; 
+}
+```
+
+Next, we're gonna modify `plot_gold_viz` to use this CSS.
