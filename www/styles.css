@@ -1,0 +1,49 @@
+.gold-viz {
+  --primary-color: #373735; 
+  --secondary-color: #AC882A;
+  --font: "Source Sans 3";
+}
+
+.gold-bar {
+  stroke: var(--primary-color);
+  fill: var(--secondary-color);
+}
+
+.plot-line {
+  stroke: var(--secondary-color);
+  stroke-width: 3;
+  fill: none;
+  opacity: .65;
+}
+
+.header {
+  fill:  var(--primary-color);
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 1.5em;
+}
+
+.subheader {
+  fill:  var(--primary-color);
+  font-family: var(--font);
+  font-weight: 300;
+  font-size: 1.25em;
+}
+
+.axis {
+  color: var(--primary-color);
+  font-weight: 400;
+  font-size: .75em;
+  font-family: var(--font);
+}
+
+.text-source {
+  font-weight: 300;
+  font-size: .85em;
+  opacity: .5;
+  text-anchor: end;
+}
+
+.cell-output-display {
+  overflow-x: unset !important;
+}

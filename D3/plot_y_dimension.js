@@ -1,7 +1,7 @@
 function plot_y_dimension() {
     // Stage One: Define min and max values of interest
   const y_min = 0;
-  const y_max = 37500000;
+  const y_max = 25000000;
   
   // Stage Two: Define dimensions
   const y_dimension = d3.scaleLinear()

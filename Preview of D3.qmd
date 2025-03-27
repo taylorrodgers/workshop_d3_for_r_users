@@ -1,0 +1,67 @@
+---
+title: "Preview of D3"
+author: "Person"
+format:
+  html:
+      theme: litera
+      css: www/styles.css
+      include-in-header:
+          - text: |
+              <style> @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap'); </style>
+editor: visual
+---
+
+```{r, echo = FALSE}
+library(devtools)
+library(tidyverse)
+library(jsonlite)
+library(freeStateData)
+data("us_treasury_data_1890s")
+
+dGold <- us_treasury_data_1890s %>%
+  filter(year_month >= as.Date("1892-11-01"),
+         year_month <= as.Date("1893-12-31")) %>%
+  select("year_month",
+         "gold_certificates_in_treasury_cash") %>%
+  rename(
+    date = year_month,
+    gold_in_cash = gold_certificates_in_treasury_cash)
+
+jGold <- jsonlite::toJSON(dGold)
+
+source("scripts/plot_gold_viz.R")
+
+```
+
+# U.S. Treasury's Gold Certificates Reaches New Lows
+
+Lorem ipsum dolor sit amet, vis quem delenit ut, ut error regione prompta sea. Ut quis viderer urbanitas vix. Sea ad accusata efficiendi interesset. Cum an rebum utamur concludaturque, diceret nominavi cum no, in facer soleat mel. At cum dolorum laboramus reformidans.
+
+<br>
+
+```{r, echo = FALSE}
+plot_gold_viz_bar(jGold)
+```
+
+<br>
+
+
+His vero expetenda dissentiunt ea, eros facer integre nec in. Vis at debitis omittantur, ne zril prodesset definiebas mea. Mea vocent facilisis scribentur ei, in vim duis reque dicit. Et his hinc facilis invenire, graeco delicata abhorreant eu vel, te labore tritani has. Has ad quas homero constituam. Eu vim nulla erant molestiae.
+
+Cu sensibus delicata instructior quo, pri labitur neglegentur eu. Mei ut lorem imperdiet, ad convenire qualisque suscipiantur sea, est molestie lobortis an. Purto democritum ut vis. Te voluptaria reformidans qui, odio virtute ea quo. Cu mei dicant mentitum. Ea sensibus definitiones duo. Nec veniam fabulas an, mundi graecis persequeris ea vel.
+
+Sumo nonumy no vel, ea fugit zril mediocritatem sit, ne munere quaeque qui. Mei iracundia inciderint ei, ne vel nobis essent aeterno. Ne omnium alterum mei, ei cum vivendum hendrerit vituperatoribus. Errem aperiam vivendo vim id, modus idque eu cum, pri in altera semper repudiare. An eam mundi dicam soleat. Corpora inimicus per ex. Sea te dico autem liberavisse, nam utinam ubique ne.
+
+Quidam nostrud luptatum eu vim. Eu eum iisque definiebas, ei eam cetero regione disputationi. Vis ei hinc quaestio. Pro posse tractatos definiebas ad, maiorum perfecto at pro. Graeci putant tincidunt ex qui, mel cu ornatus phaedrum. At saperet pertinax pro, lorem laboramus id eam, iriure mandamus consequuntur mel ad.
+
+<br>
+
+```{r, echo = FALSE}
+plot_gold_viz_line(jGold)
+```
+
+<br>
+
+Lorem ipsum dolor sit amet, vis quem delenit ut, ut error regione prompta sea. Ut quis viderer urbanitas vix. Sea ad accusata efficiendi interesset. Cum an rebum utamur concludaturque, diceret nominavi cum no, in facer soleat mel. At cum dolorum laboramus reformidans.
+
+His vero expetenda dissentiunt ea, eros facer integre nec in. Vis at debitis omittantur, ne zril prodesset definiebas mea. Mea vocent facilisis scribentur ei, in vim duis reque dicit. Et his hinc facilis invenire, graeco delicata abhorreant eu vel, te labore tritani has. Has ad quas homero constituam. Eu vim nulla erant molestiae.
