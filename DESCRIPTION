@@ -1,9 +1,9 @@
-Title: project
+Package: D3Workshop
+Title: Intro to D3 for R Users
 Description: A workshop to introduce R Users to D3.js.
 Version: 0.0.0.9000
 Authors@R: person("Taylor", "Rodgers", email = "taylor.rodgers@freestateanalytics.com",
   role = c("aut", "cre"))
-Description: What the package does (one paragraph).
 Imports:
   devtools,
   dplyr,
@@ -11,7 +11,8 @@ Imports:
   shiny,
   bslib,
   jsonlite,
-Suggests:
+  r2d3,
+  stringr,
   freeStateData
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license

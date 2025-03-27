@@ -1,3 +1,11 @@
+#' User Interface for D3 Shiny App
+#' 
+#' @import shiny
+#' @import r2d3
+#' @import bslib
+#' 
+#' @export
+
 app_ui <- page(
   theme = bs_theme(
     base_font = font_link(

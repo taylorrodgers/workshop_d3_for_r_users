@@ -1,4 +1,12 @@
-plot_gold_viz_bar <- function(jGold, directory_path = "D3", width = NULL) {
+#' Generate the Gold Visualization
+#'
+#' @import r2d3
+#' @import stringr
+#' @import jsonlite
+#'
+#' @export
+
+plot_gold_viz_bar <- function(jGold, directory_path = "D3") {
   
   file_list <- list.files(
     path = directory_path, 
@@ -10,9 +18,7 @@ plot_gold_viz_bar <- function(jGold, directory_path = "D3", width = NULL) {
 
   r2d3::r2d3(
     data = jGold,
-    script = js_scripts,
-    css = "www/styles.css",
-    width = width
+    script = js_scripts
   )
   
 } 
@@ -28,8 +34,7 @@ plot_gold_viz_line <- function(jGold, directory_path = "D3") {
 
   r2d3::r2d3(
     data = jGold,
-    script = js_scripts,
-    css = "www/styles.css"
+    script = js_scripts
   )
   
 } 
