@@ -1,0 +1,43 @@
+.gold-bar {
+  stroke: #373735;
+  fill: #AC882A;
+}
+
+.plot-line {
+  stroke: #AC882A;
+  stroke-width: 3;
+  fill: none;
+  opacity: .65;
+}
+
+.header {
+  fill:  #373735;
+  font-family: "Source Sans 3";
+  font-weight: 400;
+  font-size: 1.5em;
+}
+
+.subheader {
+  fill:  #373735;
+  font-family: "Source Sans 3";
+  font-weight: 300;
+  font-size: 1.25em;
+}
+
+.axis {
+  color: #373735;
+  font-weight: 400;
+  font-size: .75em;
+  font-family: "Source Sans 3";
+}
+
+.text-source {
+  font-weight: 300;
+  font-size: .85em;
+  opacity: .5;
+  text-anchor: end;
+}
+
+.cell-output-display {
+  overflow-x: unset !important;
+}

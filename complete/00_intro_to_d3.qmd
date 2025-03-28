@@ -6,7 +6,6 @@ format:
   html:
       css: styles.css
 editor: visual
-
 ---
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -22,7 +21,7 @@ lScripts$custom_css <- str_remove(lScripts$custom_css , "complete/")
 
 This tutorial is for R users who want to learn D3 for R-related projects.
 
-D3.js is, without a doubt, the hardest data viz development framework you could ever learn. 
+D3.js is, without a doubt, the hardest data viz development framework you could ever learn.
 
 It requires knowledge of HTML, CSS, and JavaScript.
 
@@ -36,24 +35,25 @@ Some of the most advanced interactive data visualizations in the world use D3.js
 
 For that reason, the best users of D3.js are often news organizations.
 
-## Required Knowledge 
+## Required Knowledge
+
 This course is for R users, but most R-related scripts will be provided to you to focus more on D3. It's also expected that you know some HTML and CSS. Just like R, those scripts will also be provided ahead of time to allow more focus on D3.
 
 That said, you should at least conceptually know the following:
 
-- An HTML tag
+-   An HTML tag
 
-- A CSS class
+-   A CSS class
 
-- JSON files
+-   JSON files
 
-- RStudio's interface
+-   RStudio's interface
 
-- R Shiny
+-   R Shiny
 
-- Quarto HTML documents
+-   Quarto HTML documents
 
-- tidyverse package functions
+-   tidyverse package functions
 
 JavaScript is helpful to know, but not required. Although D3.js is JavaScript, the syntax is similar enough to the `tidyverse` and other `R` functions that users will be able to start with D3.
 
@@ -80,7 +80,6 @@ I strongly suggest *Eloquent JavaScript* to learn JavaScript in general. As an R
 ## What This Tutorial Teaches?
 
 This tutorial is for R-users who want to learn D3.js. D3.js works well in both Quarto and Shiny. The skills you learned in those tools serve as a useful on-ramp to D3.js.
-
 
 This tutorial will focus exclusively on building the data visualization you see below, which is a good introduction to key concepts in D3, as well as understanding how to properly structure your R and D3.js scripts.
 
@@ -1274,7 +1273,6 @@ function plot_header(svg, margin) {
 }
 ```
 
-
 However, this is starting to get tedious. And it doesn't make it easy to update. For example, what if we wanted to play around with colors? We'd have to update each and every style block.
 
 Let's come back to this and build us a .css file.
@@ -1399,11 +1397,11 @@ function plot_bar(svg, margin, data, x_dimension, y_dimension) {
 
 ## Changing Axis and Text Colors
 
-Now, we need to use the dark grey color for our axis and text. 
+Now, we need to use the dark grey color for our axis and text.
 
-Since this 
+Since this
 
-``
+\`\`
 
 ## Changing Fonts
 
@@ -1500,5 +1498,3 @@ asgag
 
 `datum` and `data().enter()`
 :::
-
-

@@ -1,0 +1,477 @@
+---
+title: "Workshop: Intro to D3 for R Users"
+author: "Taylor Rodgers"
+format: 
+  html:
+    include-in-header:
+      - text: |
+          <style> @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap'); </style>
+editor: visual
+execute:
+  warning: false
+  message: false
+---
+
+```{r, echo = FALSE}
+### Load data sets and all related functions
+library(freeStateData)
+devtools::load_all()
+
+### Produce JSON file
+data(us_treasury_data_1890s)
+jGold <- util_generate_jGold(us_treasury_data_1890s)
+rm(us_treasury_data_1890s)
+```
+
+## Intro
+
+asgaga
+
+```{r, echo = FALSE}
+plot_gold_viz_bar(jGold, directory_path = "D3_original")
+plot_gold_viz_line(jGold,  directory_path = "D3_original")
+```
+
+## Required Knowledge
+
+asgasg
+
+## Required Packages
+
+```{r, eval = FALSE}
+# CRAN Packages
+install.packages("dplyr")
+install.packages("jsonlite")
+install.packages("r2d3")
+install.packages("shiny")
+install.packages("bslib")
+install.packages("stringr")
+install.packages("tidyr")
+install.packages("devtools")
+
+# GitHub Package
+devtools::install_github("https://github.com/Free-State-Analytics/freeStateData")
+```
+
+## Required Workspace
+
+Download this git repo or download this file and open it on Posit.cloud
+
+## Our Mockups
+
+asgags
+
+## Section One: Building a Base
+
+### Foundation
+
+margins,
+
+dimensions (range and domain)
+
+aesthetics (axis ticks, tick marks, etc.)
+
+### Create Base Script
+
+Create an empty file in `D3/` called `viz_gold_base.js`. This script will pull together and execute the other modules we'll create. It'll also house scripts that we develop along the way, before modularization.
+
+### Add Margins
+
+At the top of `viz_gold_base.js`, add binding that defines the visualization's margins. This binding will be used frequently in most of our future modules.
+
+```{js, eval = FALSE}
+// Define the margins
+const margin = {top: 100, bottom: 75, right: 75, left: 75};
+```
+
+### Add X-Axis Dimension
+
+Below the margin binding in `viz_gold_base.js`, create two bindings to define the min and max dates.
+
+```{js, eval = FALSE}
+// Define y-axis min and max values
+const x_min = new Date("1892-10-01"); 
+const x_max = new Date("1893-12-01");
+```
+
+This could be modified to take dynamic inputs (i.e., whatever minimal or maximum dates are available in the data). This tutorial simply hard codes these values for ease-of-learning.
+
+Next, create a binding for the x-axis dimensions. This should go below your `x_min` and `x_max` in `viz_gold_base.js`.
+
+```{js, eval = FALSE}
+// Define dimension for x-axis
+const x_dimension = d3.scaleUtc()
+  .domain([x_min, x_max])
+  .range([margin.left, width - margin.right]);
+```
+
+A few things about the script above:
+
+-   `domain` maps data to the axis used by our future visual elements, which is why it takes `x_min` and`x_max` as inputs.
+
+-   `range` defines the placement of this axis in relation to the overall SVG, which is why it takes into consideration `margin` and `width`.
+
+-   `scaleUtc` is used when the axis relates to date or time, but D3 uses other functions for other data types.
+
+-   `x_dimension` only defined the dimensionality. Normally, most D3 scripts in tutorials will refer to this simple as `x`. I think it's better to be more explicit to make the code more readable.
+
+### Add X-Axis Aesthetics
+
+After defining the visualization's dimensionality, the axis itself needs to be visually displayed (at least for our purposes).
+
+Below `x_dimension` in the `viz_gold_base.js` file, create a new binding for the aesthetic representation.
+
+```{js, eval = FALSE}
+// Define aesthetics for x-axis
+const x_aesthetic = d3.axisBottom(x_dimension);
+```
+
+In our new `x_aesthetic` binding, we use the `x_dimension` to create an x-axis with `axisBottom`.
+
+We'll come back to this binding shortly. First though, append a "g" element to the SVG, using this new `x_aesthetic` binding to dictate its placement.
+
+```{js, eval = FALSE}
+// Append x-axis to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .call(x_aesthetic);
+```
+
+A few things about the script above:
+
+-   `svg` is the parent tag that contains our entire visualization. `svg.append("g")` would result in a tag `<svg><g>...</g>...</svg>`
+-   Notice that a `transform` attribute is applied to the the new "g" element. This transforms the placement of the "g" along the y-axis. Why would our x-axis need to take into consideration the y-axis? Well, because `x_dimension` does not pass instruction to our `x_aesthetic` on any y-related parameters, we need to inform the "g" element to take into account the height and margin when placing the visual representation of our axis.
+
+You can now preview this in your Viewer window. Run `plot_gold_viz_bar(jGold)` to see the axis appear.
+
+### Improve X-Axis Aesthetics
+
+Right now, the x-axis displayed on the visualization looks plain.
+
+There are two places to change the look-and-feel of the axis.
+
+The **first** relates to the tick labeling. That is, do you want the tick marks to be longer, more prominent, etc.
+
+For example, you can change the [date format](https://d3-wiki.readthedocs.io/zh-cn/master/Time-Formatting/) with a combination of `tickFormat` and `utcFormat`.
+
+```{js, eval = FALSE}
+// Define aesthetics for x-axis
+const x_aesthetic = d3.axisBottom(x_dimension)
+  .tickFormat(d3.utcFormat("%y %b"));
+```
+
+The **second** relates to color, font size, etc. That is, do you want to change the style arguments for the "g" tag that generates the visual representation of the axis.
+
+For example, you could make the axis "blue" using `style("fill: blue")`
+
+```{js, eval = FALSE}
+// Append x-axis to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .style("fill", "blue")
+  .call(x_aesthetic);
+```
+
+Fortunately, we have a `.css` file already available and loaded. There is a dedicated class called `axis` that defines the style arguments we want to use.
+
+```{css, eval = FALSE}
+.axis {
+  color: #373735;
+  font-weight: 400;
+  font-size: .75em;
+  font-family: "Source Sans 3";
+}
+```
+
+Instead of passing `style`, you can pass `attr("class", "axis")`.
+
+```{js, eval = FALSE}
+// Append x-axis to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .attr("class", "axis")
+  .call(x_aesthetic);
+```
+
+CSS classes make D3 aesthetics far easier to manage, because the developer would need to copy `style` arguments repeatedly for aesthetic consistency.
+
+One thing to note, `r2d3` does not include the `font-family` provided in a CSS, even if properly linked, if it does not exist on the user's computer. The user must run an `run_app()` in the `scrap.R` file to properly see the font loaded.
+
+Now that the x-axis is in place, the y-axis needs to be added. This will follow much of the same steps as creating the x-axis, but with some important distinctions that make a big difference.
+
+### Add Y-Axis Dimension
+
+At the bottom of `viz_gold_base.js`, create two bindings to define the min and max values.
+
+```{js, eval = FALSE}
+// Define y-axis min and max values
+const y_min = 0;
+const y_max = 25000000;
+```
+
+Next, create a binding for the y-axis dimensions. This should go below your `y_min` and `y_min` in `viz_gold_base.js`.
+
+```{js, eval = FALSE}
+// Define dimensions for y-axis
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height - margin.bottom, margin.top]);
+```
+
+A few things about the script above:
+
+-   `range` defines the placement of the y-axis in relation to the overall SVG using `height` instead of `width`. Both x-and-y-axis use `margin`.
+
+-   `scaleLinear` is used when the axis relates to linear numeric value, but D3 uses other functions for other data types. This is unlike `x_dimension`, which used `scaleUtc`.
+
+-   Normally, most D3 scripts in tutorials will refer to this simple as `y`. I chose `y_dimension` because for the binding name to make it more explicit.
+
+### Add Y-Axis Aesthetics
+
+Just like with the x-axis, the y-axis will not display until we define more aesthetic considerations.
+
+Below `y_dimension` in the `viz_gold_base.js` file, create a new binding for `y_aesthetic`.
+
+```{js, eval = FALSE}
+// Define aesthetics for y-axis  
+const y_aesthetic = d3.axisLeft(y_dimension)
+  .ticks(5)
+  .tickFormat(d => "$" + (d / 1000000) + "M");
+```
+
+A few things to note about the script above:
+
+-   Unlike with `x_aesthetic`, which used `axisBottom`, the `y_aesthetic` uses `axisLeft`.
+
+```{=html}
+<!-- -->
+```
+-   `ticks` is used to define the number of tick marks. The default is far more, but to keep the visualization cleaner looking, we'll use only five. This is different than `x_aesthetic`, which used the default number of tick marks.
+
+-   Much like `x_aesthetic`, `y_aesthetic` uses `tickFormat` to dictate how the tick marks should appear. In this example, we added a "\$" sign to indicate we're looking at currency values. We also divided the amount by one million to make it easier to read, abbreviating it with "M".
+
+Next, the `y_aesthetic` binding needs to be applied to a "g" tag that is appended to the SVG.
+
+```{js, eval = FALSE}
+// Append y-axis to SVG
+svg.append("g")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .attr("class", "axis")
+  .call(y_aesthetic);
+```
+
+A few things about the script above:
+
+-   The CSS class `axis` is already added to the "g" element using `attr`.
+-   The `transform` attribute is different from the x-axis. The x-axis used a combination of `margin.bottom` and `height` to decide where the axis should be shifted. This one uses only `margin.left`. Since the `y_dimension` does not pass instructions relating to the x-axis, our axis needs additional instruction about where to place the "g" element. We would like it to be placed at `margin.left` because the left margin is exactly where we want our axis tick labels appearing.
+
+You can now preview this in your Viewer window. Run `plot_gold_viz_bar(jGold)` to see the y-aaxis appear.
+
+### Add Y-Axis Lines
+
+The mockup we are building towards with our visualization has five reference lines starting from each tick mark.
+
+The best way to add this is simply to add a second "g" tag and a binding similar to `y_aesthetic`.
+
+```{js, eval = FALSE}
+// Define aesthetics for y-axis' subtle grid lines
+const y_gridline = d3.axisLeft(y_dimension)
+  .ticks(5)
+  .tickFormat("")
+  .tickSize(-(width - margin.right - margin.left));
+```
+
+This may look like `y_aesthetic`, but there are some key differences:
+
+-   `tickFormat` is blank, because we want no additional tick labels to appear.
+
+-   `tickSize` uses `width`, `margin.right`, and `margin.right` to know that the tick marks should extend from one side of the visualization towards the other side.
+
+Now that `y_gridline` is defined, it can be passed to another `append` script.
+
+```{js, eval = FALSE}
+// Append y-axis' grid lines to SVG  
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .style("opacity", .10)
+  .call(y_gridline);
+```
+
+Much like before, this looks similar to how `y_aesthetics` was applied before. The key difference is `style("opacity", .10)`, which makes the line much lighter compared to `y_aesthetics` y-axis.
+
+You can now preview this in your Viewer window. Run `plot_gold_viz_bar(jGold)` to see the y-aaxis appear.
+
+### Checkpoint!
+
+We covered a lot in Section One. `x_dimension` and `y_dimension` are fundamental to the next sections. To ensure you are up-to-date on the tutorial, I suggest copy-and-pasting the following into your `plot_base.js` file.
+
+```{js, eval = FALSE}
+ // Define the margins
+const margin = {top: 100, bottom: 75, right: 75, left: 75};
+
+// Define x-axis min and max values
+const x_min = new Date("1892-10-01");
+const x_max = new Date("1893-12-01");  
+ 
+// Define dimension for x-axis
+const x_dimension = d3.scaleUtc()
+  .domain([x_min, x_max])
+  .range([margin.left, width - margin.right]);
+  
+// Define aesthetics for x-axis
+const x_aesthetic = d3.axisBottom(x_dimension)
+  .tickFormat(d3.utcFormat("%y %b"));
+
+// Append x-axis to SVG
+svg.append("g")
+  .attr("transform", `translate(0, ${height - margin.bottom})`)
+  .attr("class", "axis")
+  .call(x_aesthetic);
+  
+// Define y-axis min and max values
+const y_min = 0;
+const y_max = 25000000;
+
+// Define dimensions for y-axis
+const y_dimension = d3.scaleLinear()
+  .domain([y_min, y_max])
+  .range([height - margin.bottom, margin.top]);
+ 
+// Define aesthetics for y-axis  
+const y_aesthetic = d3.axisLeft(y_dimension)
+  .ticks(5)
+  .tickFormat(d => "$" + (d / 1000000) + "M");
+  
+// Append y-axis to SVG
+svg.append("g")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .attr("class", "axis")
+  .call(y_aesthetic);
+  
+// Define aesthetics for y-axis' subtle grid lines
+const y_gridline = d3.axisLeft(y_dimension)
+  .ticks(5)
+  .tickFormat("")
+  .tickSize(-(width - margin.right - margin.left));
+    
+// Append y-axis' grid lines to SVG  
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", `translate(${margin.left}, 0)`)
+  .style("opacity", .10)
+  .call(y_gridline);
+  
+```
+
+## Section Two: Modularize Code
+
+The code found in `viz_gold_base.js` is already getting long, and that is before we added any visualizations to it!
+
+That's not surprising considering how precise D3 requires its code to be to function. However, it makes it much more challenging to read and maintain.
+
+I actually suspect that much of the struggle to learn D3 is the fact that its code gets so long.
+
+Thankfully, we can modularize the code.
+
+### How Modularization Works
+
+Depending on how far along you are in R, you may have found that your projects benefit from reducing long scripts into smaller, more specific scripts.
+
+Not only does that make it easier to break the code down into more manageable parts, it also makes it easier to **re-use** code in different places. This will be important because, other than the line and bar portion of our plots, everything else our data visualization will be the same!
+
+Note: when I use the term "modularize" in D3, I don't mean it in the same since as a Shiny module. There's no need to use namespaces here.
+
+### Create Files
+
+Within the `D3/` directory on your Posit.Cloud project, create the following files:
+
+-   `viz_gold_x_dimension.js`
+
+-   `viz_gold_y_dimension.js`
+
+-   `viz_gold_x_axis.js`
+
+-   `viz_gold_y_axis.js`
+
+### Move Axis Dimensions
+
+asdf
+
+### 
+
+### Move Axis Aesthetics
+
+### Checkpoint!
+
+das
+
+## Section Three: Visualization Elements (Shapes)
+
+### How Shapes Work
+
+asdg
+
+### Add Bar Graph Module
+
+asgd
+
+### Add Line Graph Module
+
+sdag
+
+### Call Modules with Control Flow
+
+sgd
+
+### Checkpoint!
+
+asdga
+
+## Section Three: Text
+
+### How Text Works
+
+adsg
+
+### Add Header Module
+
+asdg
+
+### Add Source Module
+
+asd
+
+### Add Y-Axis Label Module (Optional)
+
+This is redundant since our plot's header has the name in it, but sd
+
+### Checkpoint!
+
+asdf
+
+## Section Four: Transitions & Animations
+
+### How Transitions Work
+
+asdg
+
+### Add Transition to Headers
+
+Easy way to get started
+
+### Add Transition to Bars
+
+asdg
+
+### Add Transition to Line
+
+This one is provided for you.
+
+### Checkpoint!
+
+ad
+
+## Conclusion
+
+dsaf

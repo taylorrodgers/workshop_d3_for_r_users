@@ -10,7 +10,7 @@ app_ui <- page(
   theme = bs_theme(
     base_font = font_link(
       "Source Sans 3", 
-      "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+      "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
     )
   ),
   div(class = "row", style = "height: 100vh;",

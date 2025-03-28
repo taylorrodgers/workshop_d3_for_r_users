@@ -14,18 +14,17 @@ function plot_y_axis(svg, margin, y_dimension) {
     
     
   // Adding subtle tick lines
-  
-    const yGridLine = d3.axisLeft(y_dimension)
-      .ticks(5)
-      .tickFormat("")
-      .tickSize(-(width - margin.right - margin.left)); ;
+  const y_gridline = d3.axisLeft(y_dimension)
+    .ticks(5)
+    .tickFormat("")
+    .tickSize(-(width - margin.right - margin.left)); ;
       
     
   svg.append("g")
   .attr("class", "y-axis")
   .attr("transform", `translate(${margin.left}, 0)`)
   .style("opacity", .10)
-  .call(yGridLine);
+  .call(y_gridline);
   
   
 }
