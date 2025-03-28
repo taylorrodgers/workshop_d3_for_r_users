@@ -243,9 +243,8 @@ A few things to note about the script above:
 
 -   Unlike with `x_aesthetic`, which used `axisBottom`, the `y_aesthetic` uses `axisLeft`.
 
-```{=html}
 <!-- -->
-```
+
 -   `ticks` is used to define the number of tick marks. The default is far more, but to keep the visualization cleaner looking, we'll use only five. This is different than `x_aesthetic`, which used the default number of tick marks.
 
 -   Much like `x_aesthetic`, `y_aesthetic` uses `tickFormat` to dictate how the tick marks should appear. In this example, we added a "\$" sign to indicate we're looking at currency values. We also divided the amount by one million to make it easier to read, abbreviating it with "M".
@@ -396,15 +395,283 @@ Within the `D3/` directory on your Posit.Cloud project, create the following fil
 
 ### Move Axis Dimensions
 
-asdf
+Within `viz_gold_x_dimensions.js`, provide the following scripts:
 
-### 
+```{js, eval = TRUE}
+function viz_gold_x_dimension(margin) {
+
+}
+```
+
+This defines a function called `viz_gold_x_dimension`, which accepts `margin` as a parameter. Parameters don't always have to be explicitedly defined, but it's better for readability.
+
+Within the `viz_gold_dimension` function, move the following code from `viz_gold_base.js`. Also, make sure to return `x_dimension`.
+
+```{js, eval = FALSE}
+function viz_gold_x_dimension(margin, width) {
+  
+  // Define x-axis min and max values
+  const x_min = new Date("1892-10-01");
+  const x_max = new Date("1893-12-01");  
+   
+  // Define dimension for x-axis
+  const x_dimension = d3.scaleUtc()
+    .domain([x_min, x_max])
+    .range([margin.left, width - margin.right]);
+  
+  return x_dimension;
+  
+}
+```
+
+A few things to note about the above function:
+
+-   `margin` and `width` are parameters because they are used to create the `range`. These parameters don't always need to be explicitly stated within the function, but it improves readability.
+
+-   `x_min` and `x_max` could become parameters, which would be useful in an R Shiny application. That is beyond the scope of this tutorial though.
+
+-   `return x_dimension` ensures that the script returns the `x_dimension` binding, which will be used as a parameter in a variety of the other functions we will create.
+
+Now that there is a function (or module) that produces `x_dimension`, we can simplify our code found in `viz_gold_base.js`.
+
+Right below the `margin` binding, replace code relating to `x_dimension`.
+
+```{js, eval = FALSE}
+ // Define the margins
+const margin = {top: 100, bottom: 75, right: 75, left: 75};
+
+// Define dimensions
+const x_dimension = viz_gold_x_dimension(margin, width);
+```
+
+Next, `y_dimension` needs to be moved to `viz_gold_y_dimension.js`.
+
+```{js, eval = FALSE}
+function viz_gold_y_dimension(margin, height) {
+  
+  // Define y-axis min and max values
+  const y_min = 0;
+  const y_max = 25000000;
+  
+  // Define dimensions for y-axis
+  const y_dimension = d3.scaleLinear()
+    .domain([y_min, y_max])
+    .range([height - margin.bottom, margin.top]);
+    
+  return y_dimension;
+  
+}
+```
+
+Notice that the function above does not use `width` like `viz_gold_x_dimension`. It uses `height` instead.
+
+Next, replace code relating to the x-axis' dimensions with the new `viz_gold_y_dimension` function.
+
+```{js, eval = FALSE}
+ // Define the margins
+const margin = {top: 100, bottom: 75, right: 75, left: 75};
+
+// Define dimensions
+const x_dimension = viz_gold_x_dimension(margin, width);
+const y_dimension = viz_gold_y_dimension(margin, height);
+```
+
+Now that the dimension-related code is modularized, we can work on the aesthetics. You can test that everything works fine by running `plot_gold_viz_bar(jGold)`.
 
 ### Move Axis Aesthetics
 
+Within `viz_gold_x_axis.js`, move the code relating to the x-axis' aesthetics.
+
+```{js, eval = FALSE}
+function viz_gold_x_axis(x_dimension, margin, height) {
+
+  // Define aesthetics for x-axis
+  const x_aesthetic = d3.axisBottom(x_dimension)
+    .tickFormat(d3.utcFormat("%y %b"));
+  
+  // Append x-axis to SVG
+  svg.append("g")
+    .attr("transform", `translate(0, ${height - margin.bottom})`)
+    .attr("class", "axis")
+    .call(x_aesthetic);
+  
+}
+```
+
+A few things to note about the code above:
+
+-   `x_dimension`, `margin`, and `height` are parameters, because they are used throughout the code contained inside.
+
+-   There is no need to return anything within the function. `svg.append("g")` is modifying the SVG that is presented to the visualization's viewer.
+
+Within `viz_gold_y_axis.js`, move the code relating to the y-axis' aesthetics.
+
+```{js, eval = FALSE}
+function viz_gold_y_axis(y_dimension, margin, width) {
+  
+  // Define aesthetics for y-axis  
+  const y_aesthetic = d3.axisLeft(y_dimension)
+    .ticks(5)
+    .tickFormat(d => "$" + (d / 1000000) + "M");
+    
+  // Append y-axis to SVG
+  svg.append("g")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .attr("class", "axis")
+    .call(y_aesthetic);
+    
+  // Define aesthetics for y-axis' subtle grid lines
+  const y_gridline = d3.axisLeft(y_dimension)
+    .ticks(5)
+    .tickFormat("")
+    .tickSize(-(width - margin.right - margin.left));
+      
+  // Append y-axis' grid lines to SVG  
+  svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .style("opacity", .10)
+    .call(y_gridline);
+    
+}
+```
+
+Now that the two aesthetic functions are created, `viz_gold_base.js` can be simplified further.
+
+```{js, eval = FALSE}
+ // Define the margins
+const margin = {top: 100, bottom: 75, right: 75, left: 75};
+
+// Define dimensions
+const x_dimension = viz_gold_x_dimension(margin, width);
+const y_dimension = viz_gold_y_dimension(margin, height);
+  
+// Generate the two axis on SVG
+viz_gold_x_axis(x_dimension, margin, height);
+viz_gold_y_axis(y_dimension, margin, width);
+```
+
+Notice in the code above that `viz_gold_x_axis` and `viz_gold_y_axis` are not within a binding. It's not necessary for those two functions, because they are simply modifying the SVG to show the axis. They will not serve as parameters to use elsewhere.
+
+You can run `plot_gold_viz_bar(jGold)` to see an updated preview.
+
+### Could the Axis Aesthetics Be Placed with Dimensions?
+
+You may be wondering... why not include the aesthetics related code within one function, such as with `viz_gold_x_dimension`?
+
+That would work. However, modularization works well when the modules are focused on one particular function. The two dimension related functions are about creating `x_dimension` and `y_dimension`. Both are used as a parameter, not only for the aesthetics related code, but also the shapes that we'll produce later.
+
+So long as the functions both return and are binded to `x_dimension` and `y_dimension`, then including the aesthetics code will work.
+
 ### Checkpoint!
 
-das
+A lot has happened this section. Things are easy to miss. Maybe one pesky `)` was missing or a comma is out of place.
+
+Run through the tabs below to copy-and-paste the code we've produced so far.
+
+::: {.panel-tabset}
+## viz_gold_base.js
+
+``` {js, eval = FALSE}
+ // Define the margins
+const margin = {top: 100, bottom: 75, right: 75, left: 75};
+
+// Define dimensions
+const x_dimension = viz_gold_x_dimension(margin, width);
+const y_dimension = viz_gold_y_dimension(margin, height);
+  
+// Generate the two axis on SVG
+viz_gold_x_axis(x_dimension, margin, height);
+viz_gold_y_axis(y_dimension, margin, width);
+```
+
+## viz_gold_x_dimension.js
+
+```{js, eval = FALSE}
+function viz_gold_x_dimension(margin, width) {
+  // Define x-axis min and max values
+  const x_min = new Date("1892-10-01");
+  const x_max = new Date("1893-12-01");  
+  
+  // Define dimension for x-axis
+  const x_dimension = d3.scaleUtc()
+  .domain([x_min, x_max])
+  .range([margin.left, width - margin.right]);
+  
+  return x_dimension;
+}
+```
+
+## viz_gold_y_dimension.js
+
+```{js, eval = FALSE}
+function viz_gold_y_dimension(margin, height) {
+  
+  // Define y-axis min and max values
+  const y_min = 0;
+  const y_max = 25000000;
+  
+  // Define dimensions for y-axis
+  const y_dimension = d3.scaleLinear()
+    .domain([y_min, y_max])
+    .range([height - margin.bottom, margin.top]);
+    
+  return y_dimension;
+  
+}
+```
+
+## viz_gold_x_axis.js
+
+```{js, eval = FALSE}
+function viz_gold_x_axis(x_dimension, margin, height) {
+
+  // Define aesthetics for x-axis
+  const x_aesthetic = d3.axisBottom(x_dimension)
+    .tickFormat(d3.utcFormat("%y %b"));
+  
+  // Append x-axis to SVG
+  svg.append("g")
+    .attr("transform", `translate(0, ${height - margin.bottom})`)
+    .attr("class", "axis")
+    .call(x_aesthetic);
+  
+}
+```
+
+## viz_gold_y_axis.js
+
+```{js, eval = FALSE}
+function viz_gold_y_axis(y_dimension, margin, width) {
+  
+  // Define aesthetics for y-axis  
+  const y_aesthetic = d3.axisLeft(y_dimension)
+    .ticks(5)
+    .tickFormat(d => "$" + (d / 1000000) + "M");
+    
+  // Append y-axis to SVG
+  svg.append("g")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .attr("class", "axis")
+    .call(y_aesthetic);
+    
+  // Define aesthetics for y-axis' subtle grid lines
+  const y_gridline = d3.axisLeft(y_dimension)
+    .ticks(5)
+    .tickFormat("")
+    .tickSize(-(width - margin.right - margin.left));
+      
+  // Append y-axis' grid lines to SVG  
+  svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", `translate(${margin.left}, 0)`)
+    .style("opacity", .10)
+    .call(y_gridline);
+    
+}
+```
+
+:::
 
 ## Section Three: Visualization Elements (Shapes)
 
