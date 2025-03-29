@@ -1,40 +1,34 @@
-.gold-viz {
-  --primary-color: #373735; 
-  --secondary-color: #AC882A;
-  --font: "Source Sans 3";
-}
-
 .gold-bar {
-  stroke: var(--primary-color);
-  fill: var(--secondary-color);
+  stroke: #373735;
+  fill: #AC882A;
 }
 
 .plot-line {
-  stroke: var(--secondary-color);
+  stroke: #AC882A;
   stroke-width: 3;
   fill: none;
   opacity: .65;
 }
 
 .header {
-  fill:  var(--primary-color);
-  font-family: var(--font);
+  fill:  #373735;
+  font-family: "Source Sans 3";
   font-weight: 400;
   font-size: 1.5em;
 }
 
 .subheader {
-  fill:  var(--primary-color);
-  font-family: var(--font);
+  fill:  #373735;
+  font-family: "Source Sans 3";
   font-weight: 300;
   font-size: 1.25em;
 }
 
 .axis {
-  color: var(--primary-color);
+  color: #373735;
   font-weight: 400;
   font-size: .75em;
-  font-family: var(--font);
+  font-family: "Source Sans 3";
 }
 
 .text-source {

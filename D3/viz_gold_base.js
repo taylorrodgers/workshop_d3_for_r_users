@@ -9,5 +9,6 @@ const y_dimension = viz_gold_y_dimension(margin, height);
 viz_gold_x_axis(x_dimension, margin, height);
 viz_gold_y_axis(y_dimension, margin, width);
 
-  
+// Add shapes
+gold_bar(svg, margin, data, x_dimension, y_dimension)
     

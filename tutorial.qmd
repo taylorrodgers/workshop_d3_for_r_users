@@ -483,7 +483,7 @@ Now that the dimension-related code is modularized, we can work on the aesthetic
 Within `viz_gold_x_axis.js`, move the code relating to the x-axis' aesthetics.
 
 ```{js, eval = FALSE}
-function viz_gold_x_axis(x_dimension, margin, height) {
+function viz_gold_x_axis(svg, x_dimension, margin, height) {
 
   // Define aesthetics for x-axis
   const x_aesthetic = d3.axisBottom(x_dimension)
@@ -507,7 +507,7 @@ A few things to note about the code above:
 Within `viz_gold_y_axis.js`, move the code relating to the y-axis' aesthetics.
 
 ```{js, eval = FALSE}
-function viz_gold_y_axis(y_dimension, margin, width) {
+function viz_gold_y_axis(svg, y_dimension, margin, width) {
   
   // Define aesthetics for y-axis  
   const y_aesthetic = d3.axisLeft(y_dimension)
@@ -547,8 +547,8 @@ const x_dimension = viz_gold_x_dimension(margin, width);
 const y_dimension = viz_gold_y_dimension(margin, height);
   
 // Generate the two axis on SVG
-viz_gold_x_axis(x_dimension, margin, height);
-viz_gold_y_axis(y_dimension, margin, width);
+viz_gold_x_axis(svg, x_dimension, margin, height);
+viz_gold_y_axis(svg, y_dimension, margin, width);
 ```
 
 Notice in the code above that `viz_gold_x_axis` and `viz_gold_y_axis` are not within a binding. It's not necessary for those two functions, because they are simply modifying the SVG to show the axis. They will not serve as parameters to use elsewhere.
@@ -559,9 +559,11 @@ You can run `plot_gold_viz_bar(jGold)` to see an updated preview.
 
 You may be wondering... why not include the aesthetics related code within one function, such as with `viz_gold_x_dimension`?
 
-That would work. However, modularization works well when the modules are focused on one particular function. The two dimension related functions are about creating `x_dimension` and `y_dimension`. Both are used as a parameter, not only for the aesthetics related code, but also the shapes that we'll produce later.
+That would work. However, one benefit to modularizing code is that you create more clarity on a function's purpose.
 
-So long as the functions both return and are binded to `x_dimension` and `y_dimension`, then including the aesthetics code will work.
+`viz_gold_x_dimension` and `viz_gold_y_dimension` have "dimension" in their name, so it's clear that they create and return the dimensions for the visualization. These dimensions will be used as a parameter in future functions we'll produce.
+
+That said, you can choose to include the aesthetics within those functions if you want to, so long as the functions both return and are binded to `x_dimension` and `y_dimension`.
 
 ### Checkpoint!
 
@@ -569,10 +571,10 @@ A lot has happened this section. Things are easy to miss. Maybe one pesky `)` wa
 
 Run through the tabs below to copy-and-paste the code we've produced so far.
 
-::: {.panel-tabset}
+::: panel-tabset
 ## viz_gold_base.js
 
-``` {js, eval = FALSE}
+```{js, eval = FALSE}
  // Define the margins
 const margin = {top: 100, bottom: 75, right: 75, left: 75};
 
@@ -581,8 +583,8 @@ const x_dimension = viz_gold_x_dimension(margin, width);
 const y_dimension = viz_gold_y_dimension(margin, height);
   
 // Generate the two axis on SVG
-viz_gold_x_axis(x_dimension, margin, height);
-viz_gold_y_axis(y_dimension, margin, width);
+viz_gold_x_axis(svg, x_dimension, margin, height);
+viz_gold_y_axis(svg, y_dimension, margin, width);
 ```
 
 ## viz_gold_x_dimension.js
@@ -624,7 +626,7 @@ function viz_gold_y_dimension(margin, height) {
 ## viz_gold_x_axis.js
 
 ```{js, eval = FALSE}
-function viz_gold_x_axis(x_dimension, margin, height) {
+function viz_gold_x_axis(svg, x_dimension, margin, height) {
 
   // Define aesthetics for x-axis
   const x_aesthetic = d3.axisBottom(x_dimension)
@@ -642,7 +644,7 @@ function viz_gold_x_axis(x_dimension, margin, height) {
 ## viz_gold_y_axis.js
 
 ```{js, eval = FALSE}
-function viz_gold_y_axis(y_dimension, margin, width) {
+function viz_gold_y_axis(svg, y_dimension, margin, width) {
   
   // Define aesthetics for y-axis  
   const y_aesthetic = d3.axisLeft(y_dimension)
@@ -670,18 +672,222 @@ function viz_gold_y_axis(y_dimension, margin, width) {
     
 }
 ```
-
 :::
 
 ## Section Three: Visualization Elements (Shapes)
 
+Most of the work so far has related to dimensions and producing visual representations of the axis. One thing that's missing, as I'm sure you noticed, is that there is no visual elements of the data. D3 often refers to these as shapes.
+
 ### How Shapes Work
 
-asdg
+Adding shapes to a D3 visualization is often a case of the "it depends!" This is where modern LLM tools, such as ChatGPT, can be helpful in asking for examples.
+
+With that said, one important distinction to make early on when adding shapes is: are you adding just **one** shape or **multiple**?
+
+This changes how you append shapes to your SVG, and how you attach data. It also changes the order of operations.
+
+For example, our bar graph will be *multiple* shapes for each data point, because there are multiple bars. A line (D3 calls it a "path") is *one* shape, whose outline is decided by the data points.
 
 ### Add Bar Graph Module
 
-asgd
+Within the `D3/` directory, create a new file called `gold_bar.js`
+
+Within `bar.js`, define a function called `bar`.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+
+}
+```
+
+A few things to note about the code above:
+
+-   `data` is a parameter that hasn't been added yet. It is actually `jGold`, which is passed by `r2d3`'s `data` parameter. You can see this in `plot_gold_viz_line.R` and `plot_gold_viz_bar.R`.
+
+-   `x_dimension` and `y_dimension` are included as params, but nothing related to `x_aesthetic` and `y_aesthetic` are. That's because the visual representation on our plot contributes nothing functional to the sizing of the bars.
+
+Next, add `gold_bar` to the bottom of `viz_gold_base`. This will make it easier to preview along the way with `plot_gold_vize_line` (R-function).
+
+```{js, eval = FALSE}
+// Add shapes
+gold_bar(svg, margin, data, x_dimension, y_dimension)
+```
+
+Next, attach data to the SVG and append a "rect" within the `gold_bar` function.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+  
+}
+```
+
+The code above is one of the least intuitive aspects relating to D3. I wish it were different, because it does make things more complicated (for the developer) to understand.
+
+A few notes to help clarity what's happening here:
+
+-   The code uses `selectAll("gold-bar")` searches for a tag labeled "gold-bar" that is within the SVG. This tag does not exist yet. 
+
+-   `.data(data)`attempts to attach your data to the non-existent "gold-bar." Since it doesn't exist, the developer needs to enter a new tag using `enter`.
+
+-   `append("rect")` appends a rectangle shape (which is what the bars are) to the SVG and will do so with the data. We haven't provided any instructions on how the shape will use such data, so it will not appear yet.
+
+What's most frustrating is that this is the common approach when you are attempting to append multiple shapes. It won't happen this way when you append a single shape.
+
+Now that we have our data and the type of shapes we want to append, it's time to decide the starting point for the shape.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => x_dimension(new Date(d.date)))
+    .attr("y", d => y_dimension(d.gold_in_cash));
+    
+}
+```
+
+A few notes about the code above:
+
+-   `attr("x", ...)` and `attr("y", ...)` is defining the starting point of each rectangle on the plot.
+
+-   For `attr("x", ...)`, the `x_dimension` is used as a function (which it is) to determine where the starting point on the X-axis the rectangle should start.
+
+-   For `attr("y", ...)`, the `y_dimension` is used as a function to determine where the starting point on the Y-axis.
+
+-   Recall that `x_dimension` and `y_dimension` both provide instructions on where to start the axis on the plot and the length of the axis, based on margin, height, and width.
+
+-   `d => x_dimension(...)` and `d => y_dimension(...)` are passing `data` (which is really our `jGold` JSON file) to find the placement with respect to axis size, margin, height, and width
+
+-   `x_dimenstion(new Date(d.date))` determines where on the SVG a point associated with a specific date point found in `data` (i.e., `jGold`).
+
+-   `y_dimension(d.gold_in_cash)` determines where on the SVG a rectangle should start based on each `gold_in_cash`.
+
+The code above only defined the starting point. 
+
+Next, we need to define how wide the bars are and how tall (or rather, how "low") they should be. For now, let's define the `width` and `height` as 10 for now.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => x_dimension(new Date(d.date)))
+    .attr("y", d => y_dimension(d.gold_in_cash))
+    .attr("width", 10)
+    .attr("height", 10)
+    ;
+    
+}
+```
+
+Go ahead and render the visualization using `plot_gold_viz_bar(jGold)` (R-function). You may notice that the starting point for the `x` is the actual data point. So when `height` is set to 10, it merely goes down horizontally 10 points. The same thing with `width`, only vertically.
+
+We need to extend the bar from the data point of interest (i.e., `gold_in_cash`) all the way to the x-axis. That makes the height dependent on the parameters `height`, `margin.bottom`, and `y_dimension` to properly size.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => x_dimension(new Date(d.date)))
+    .attr("y", d => y_dimension(d.gold_in_cash))
+    .attr("width", 10)
+    .attr("height", d => height - margin.bottom - y_dimension(d.gold_in_cash))
+    ;
+    
+}
+```
+
+Now re-render your plot with `plot_gold_viz_bar(jGold)`. Notice that the bars are off center on the x-axis. How could this be resolved? Well, first ask whether it's a `width` issue or a `x` placement issue?
+
+It's a placement issue.
+
+We need to shift the bar to the left, but also take into account it's width. The easiest way to do that is to make `bar_width` a binding that can be called by both.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  const bar_width = 10
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => x_dimension(new Date(d.date)) - (bar_width / 2))
+    .attr("y", d => y_dimension(d.gold_in_cash))
+    .attr("width", bar_width)
+    .attr("height", d => height - margin.bottom - y_dimension(d.gold_in_cash));
+    
+}
+```
+
+A few things to notice about the code above:
+
+-   `bar_width` is made into a binding, since it's used in two different places.
+
+-   `(bar_width / 2)` is *not* placed inside `x_dimension`. The reason is that `x_dimension` translate the data `d.date` into a point on the SVG. Since `bar_width / 2` is already translated into such a point, it does not need to be run through `x_dimension`.
+
+Now re-render your plot with `plot_gold_viz_bar(jGold)`. Notice how the bars are centered.
+
+The bars are skinny though. We could make them 20 or 30 points wide. Go ahead and try, if you'd like.
+
+However, that doesn't size well based on the size of the viewer. One of the great advantages of D3 is how responsive it is to different screen sizes.
+
+You can modify `bar_width` further to take into account the size of the screen.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  const bar_width = (width - margin.left - margin.right) / 20;
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", d => x_dimension(new Date(d.date)) - (bar_width / 2))
+    .attr("y", d => y_dimension(d.gold_in_cash))
+    .attr("width", bar_width)
+    .attr("height", d => height - margin.bottom - y_dimension(d.gold_in_cash));
+    
+}
+```
+
+Now re-render your plot with `plot_gold_viz_bar(jGold)`. Notice how the bars change width based on screen size.
+
+Finally, we need to add color to our bars. Thankfully, we have a CSS class defined in our `.css` file.
+
+Right after `append("rect")`, add the CSS class `gold-bar` as an attribute.
+
+```{js, eval = FALSE}
+function gold_bar(svg, margin, data, x_dimension, y_dimension) {
+  
+  const bar_width = (width - margin.left - margin.right) / 20;
+  
+  svg.selectAll("gold-bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "gold-bar")
+    .attr("x", d => x_dimension(new Date(d.date)) - (bar_width / 2))
+    .attr("y", d => y_dimension(d.gold_in_cash))
+    .attr("width", bar_width)
+    .attr("height", d => height - margin.bottom - y_dimension(d.gold_in_cash));
+    
+}
+```
+
+The bars on the plot should now be orange.
 
 ### Add Line Graph Module
 
